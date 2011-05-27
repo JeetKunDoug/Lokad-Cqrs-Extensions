@@ -1,0 +1,57 @@
+﻿using System;
+
+using CommonDomain.Core;
+
+using Domain.Events;
+
+using Lokad.Cqrs;
+
+namespace Domain
+{
+    public class Message : AggregateBase<Define.Event>
+    {
+        private DateTime created;
+        private DateTime lastModified;
+        private string message;
+
+        private Message(Guid id)
+        {
+            Id = id;
+        }
+
+        public Message(Guid id, string message) : this(id)
+        {
+            RaiseEvent(new MessageCreated
+            {
+                Id = id,
+                Message = message,
+                UtcCreated = DateTime.UtcNow
+            });
+        }
+
+        public void ChangeMessage(string s)
+        {
+            if (s.Equals(message))
+                return;
+
+            RaiseEvent(new MessageEdited
+            {
+                Id = Id,
+                Message = message,
+                UtcEdited = DateTime.UtcNow
+            });
+        }
+
+        protected void Apply(MessageCreated e)
+        {
+            message = e.Message;
+            created = e.UtcCreated;
+        }
+
+        protected void Apply(MessageEdited e)
+        {
+            message = e.Message;
+            lastModified = e.UtcEdited;
+        }
+    }
+}
