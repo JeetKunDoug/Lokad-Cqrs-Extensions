@@ -93,6 +93,7 @@ namespace Client
             DateTime dateTime = DateTime.Parse(SqlDateTime.MinValue.ToString());
             var commits = store.GetFrom(dateTime);
 
+            //why are edits missing?
             foreach (var commit in commits)
             {
                 commit.Events.ForEach(e=>
