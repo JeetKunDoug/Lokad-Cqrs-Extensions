@@ -43,12 +43,13 @@ namespace Lokad.Cqrs.Extensions.EventStore
     {
         private readonly TimeSpan checkInterval;
         private readonly ISystemObserver observer;
-        private readonly IStoreEvents snapshots;
+        private readonly IStoreEvents eventStore;
         private readonly int threshold;
 
-        public SnapshottingProcess(IStoreEvents snapshots, int threshold, TimeSpan checkInterval, ISystemObserver observer)
+        public SnapshottingProcess(IStoreEvents eventStore, int threshold, TimeSpan checkInterval,
+                                   ISystemObserver observer)
         {
-            this.snapshots = snapshots;
+            this.eventStore = eventStore;
             this.checkInterval = checkInterval;
             this.observer = observer;
             this.threshold = threshold;
@@ -74,7 +75,7 @@ namespace Lokad.Cqrs.Extensions.EventStore
             {
                 while (!token.IsCancellationRequested)
                 {
-                    CreateSnapshots(snapshots.GetStreamsToSnapshot(threshold).ToArray());
+                    CreateSnapshots(eventStore.GetStreamsToSnapshot(threshold).ToArray());
 
                     token.WaitHandle.WaitOne(checkInterval);
                 }
@@ -86,18 +87,18 @@ namespace Lokad.Cqrs.Extensions.EventStore
             if (streams.Length == 0)
                 return;
 
-            foreach (var s in streams)
+            foreach (StreamHead s in streams)
             {
-                var eventStream = snapshots.OpenStream(s.StreamId, s.HeadRevision, int.MaxValue);
+                IEventStream eventStream = eventStore.OpenStream(s.StreamId, s.HeadRevision, int.MaxValue);
 
-                var message = eventStream.CommittedEvents.Last();
-                
-                if(message == null)
+                EventMessage message = eventStream.CommittedEvents.Last();
+
+                if (message == null)
                     continue;
 
                 var snapshot = new Snapshot(s.StreamId, s.SnapshotRevision + 1, message);
 
-                snapshots.AddSnapshot(snapshot);
+                eventStore.AddSnapshot(snapshot);
 
                 observer.Notify(new SnapshotTaken(s.StreamId, s.HeadRevision));
             }
