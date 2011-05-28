@@ -56,7 +56,7 @@ namespace Client
             messages = new Dictionary<Guid, string>();
         }
 
-        private void SendCommand()
+        private void CreateMessage()
         {
             Guid id = Guid.NewGuid();
             string message = reader.GetString("Enter message");
@@ -88,27 +88,39 @@ namespace Client
             messages[pair.Key] = message;
         }
 
+        private void ReplayMessageEvents()
+        {
+            var pair = reader.GetValueOf("Pick message", messages, p => p.Value);
+
+            var stream = store.OpenStream(pair.Key, 0, int.MaxValue);
+
+            EnumerateEvents(stream.CommittedEvents);
+        }
+
         private void ReplayAllEvents()
         {
             DateTime dateTime = DateTime.Parse(SqlDateTime.MinValue.ToString());
-            var commits = store.GetFrom(dateTime);
 
-            //why are edits missing?
-            foreach (var commit in commits)
+            foreach (var commit in store.GetFrom(dateTime))
             {
-                commit.Events.ForEach(e=>
+                EnumerateEvents(commit.Events);
+            }
+        }
+
+        private void EnumerateEvents(IEnumerable<EventMessage> messageCollection)
+        {
+            foreach (var message in messageCollection)
+            {
+                if (message.Body is MessageCreated)
                 {
-                    if(e.Body is MessageCreated)
-                    {
-                        var @event = (MessageCreated)e.Body;
-                        Console.Out.WriteLine("Create message: [{0}]: {1}", @event.Id, @event.Message);
-                    }
-                    if(e.Body is EditMessage)
-                    {
-                        var @event = (EditMessage)e.Body;
-                        Console.Out.WriteLine("Edit message: [{0}]: {1} -> {2}", @event.Id, @event.OldMessage, @event.Message);
-                    }
-                });
+                    var @event = (MessageCreated)message.Body;
+                    Console.Out.WriteLine("{0,-20}: [{1}]: {2}", "message created", @event.Id, @event.Message);
+                }
+                if (message.Body is MessageEdited)
+                {
+                    var @event = (MessageEdited)message.Body;
+                    Console.Out.WriteLine("{0,-20}: [{1}]: {2} -> {3}", "message edited", @event.Id, @event.OldMessage, @event.Message);
+                }
             }
         }
 
@@ -129,9 +141,10 @@ namespace Client
         {
             var choice = reader.GetValueOf("Choose operation", new[]
             {
-                new Tuple<string, Action>("Send message", SendCommand),
+                new Tuple<string, Action>("Send message", CreateMessage),
                 new Tuple<string, Action>("Edit message", EditMessage), 
-                new Tuple<string, Action>("Replay all events", ReplayAllEvents)
+                new Tuple<string, Action>("Replay all events", ReplayAllEvents),
+                new Tuple<string, Action>("Replay events for message", ReplayMessageEvents)
 
             }, t => t.Item1);
 

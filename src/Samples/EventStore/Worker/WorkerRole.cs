@@ -32,6 +32,8 @@ using System.Net;
 
 using Commands;
 
+using Context;
+
 using Domain.CommandHandlers;
 
 using Lokad.Cqrs;
@@ -71,6 +73,7 @@ namespace Worker
         {
             var builder = new CqrsEngineBuilder();
 
+            //NOTE: Core Lokad CQRS Initialization
             builder.UseProtoBufSerialization();
 
             builder.Domain(config =>
@@ -85,8 +88,8 @@ namespace Worker
             builder.Azure(config =>
             {
 
-                config.AddAzureProcess(storageConfig, "eventstore-sample-messages");
-                config.AddAzureSender(storageConfig, "eventstore-sample-messages");
+                config.AddAzureProcess(storageConfig, Queues.MESSAGES);
+                config.AddAzureSender(storageConfig, Queues.MESSAGES);
             });
 
             builder.Storage(config => config.AtomicIsInAzure(storageConfig, s =>
@@ -95,15 +98,17 @@ namespace Worker
                 s.CustomStaticSerializer(new AtomicStorageSerializerWithProtoBuf());
             }));
 
+            //NOTE: Event Store Initialization
             builder.ConfigureJonathanOliverEventStore(config =>
             {
                 config.ConnectionStringSettingName("EventStoreConnectionString");
-                config.Hooks(p => p.Add(EventStorePipelineHook.Trace));
+                config.Hooks(p => p.Add<MyNullPipelineHook>());
                 config.Snapshots(s =>
                 {
                     s.Enable();
                     s.CheckEvery(TimeSpan.FromSeconds(30));
-                    //set this to something reasonable like 250. It's so low here to demonstrate background out "out-of-band" snapshotting.
+                    //set this to something reasonable like 250. 
+                    //It's so low here to demonstrate background "out-of-band" snapshotting.
                     s.MaxThreshold(2);
                 });
             });

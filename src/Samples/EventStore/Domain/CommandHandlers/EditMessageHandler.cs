@@ -4,8 +4,9 @@ using Commands;
 
 using CommonDomain.Persistence;
 
+using Context;
+
 using Lokad.Cqrs;
-using Lokad.Cqrs.Extensions.EventStore;
 
 namespace Domain.CommandHandlers
 {

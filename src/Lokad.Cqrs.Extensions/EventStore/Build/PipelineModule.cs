@@ -38,6 +38,12 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
     {
         private readonly ContainerBuilder builder = new ContainerBuilder();
 
+        public PipelineModule()
+        {
+            builder.RegisterType<PipelineHookSystemObserver>()
+                .SingleInstance().As<IPipelineHook>();
+        }
+
         #region Implementation of IModule
 
         void IModule.Configure(IComponentRegistry componentRegistry)

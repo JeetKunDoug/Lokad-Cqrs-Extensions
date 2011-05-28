@@ -35,18 +35,22 @@ using System.Threading.Tasks;
 using EventStore;
 using EventStore.Persistence;
 
+using Lokad.Cqrs.Extensions.EventStore.Events;
+
 namespace Lokad.Cqrs.Extensions.EventStore
 {
     internal class SnapshottingProcess : IEngineProcess
     {
         private readonly TimeSpan checkInterval;
+        private readonly ISystemObserver observer;
         private readonly IStoreEvents snapshots;
         private readonly int threshold;
 
-        public SnapshottingProcess(IStoreEvents snapshots, int threshold, TimeSpan checkInterval)
+        public SnapshottingProcess(IStoreEvents snapshots, int threshold, TimeSpan checkInterval, ISystemObserver observer)
         {
             this.snapshots = snapshots;
             this.checkInterval = checkInterval;
+            this.observer = observer;
             this.threshold = threshold;
         }
 
@@ -86,9 +90,16 @@ namespace Lokad.Cqrs.Extensions.EventStore
             {
                 var eventStream = snapshots.OpenStream(s.StreamId, s.HeadRevision, int.MaxValue);
 
-                var snapshot = new Snapshot(s.StreamId, s.SnapshotRevision + 1, eventStream);
+                var message = eventStream.CommittedEvents.Last();
+                
+                if(message == null)
+                    continue;
+
+                var snapshot = new Snapshot(s.StreamId, s.SnapshotRevision + 1, message);
 
                 snapshots.AddSnapshot(snapshot);
+
+                observer.Notify(new SnapshotTaken(s.StreamId, s.SnapshotRevision));
             }
         }
 

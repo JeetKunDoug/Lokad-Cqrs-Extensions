@@ -31,7 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=2.4.5.724, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL" />
+    <Reference Include="Autofac">
+      <HintPath>..\..\lib\autofac\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="CommonDomain, Version=1.2.0.0, Culture=neutral, PublicKeyToken=ec37a15dc44010cd, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\CommonDomain\CommonDomain.dll</HintPath>
@@ -68,11 +70,12 @@
     <Compile Include="EventStore\Build\ISnapshottingConfiguration.cs" />
     <Compile Include="EventStore\Build\PipelineModule.cs" />
     <Compile Include="EventStore\Build\SnapshotModule.cs" />
-    <Compile Include="EventStore\EventStorePipelineHook.cs" />
-    <Compile Include="EventStore\ExtendIRepository.cs" />
-    <Compile Include="EventStore\NullEventStorePipelineHook.cs" />
+    <Compile Include="EventStore\Events\CommitSelected.cs" />
+    <Compile Include="EventStore\Events\PostCommit.cs" />
+    <Compile Include="EventStore\Events\PreCommit.cs" />
+    <Compile Include="EventStore\Events\SnapshotTaken.cs" />
+    <Compile Include="EventStore\PipelineHookSystemObserver.cs" />
     <Compile Include="EventStore\SnapshottingProcess.cs" />
-    <Compile Include="EventStore\TraceEventStorePipelineHook.cs" />
     <Compile Include="EventStore\Build\AggregateFactory.cs" />
     <Compile Include="EventStore\Build\AzureConfigurationConnectionFactory.cs" />
     <Compile Include="EventStore\Build\EventStoreModule.cs" />

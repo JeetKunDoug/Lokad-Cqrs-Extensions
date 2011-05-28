@@ -29,16 +29,17 @@ namespace Domain
             });
         }
 
-        public void ChangeMessage(string s)
+        public void ChangeMessage(string newMessage)
         {
-            if (s.Equals(message))
+            if (newMessage.Equals(message))
                 return;
 
             RaiseEvent(new MessageEdited
             {
                 Id = Id,
-                Message = message,
-                UtcEdited = DateTime.UtcNow
+                Message = newMessage,
+                UtcEdited = DateTime.UtcNow,
+                OldMessage = message
             });
         }
 

@@ -34,10 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
-      <HintPath>..\..\..\Lokad.Cqrs.Extensions\bin\Debug\Autofac.dll</HintPath>
+      <HintPath>..\..\..\..\lib\autofac\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="EventStore">
-      <HintPath>..\..\..\Lokad.Cqrs.Extensions\bin\Debug\EventStore.dll</HintPath>
+      <HintPath>..\..\..\..\lib\EventStore\bin\EventStore.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Cqrs.Azure">
       <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Azure.dll</HintPath>
@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyNullPipelineHook.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\Commands\Commands.csproj">
       <Project>{48C13124-407F-4CE5-BDDD-6ED69FAE0D5C}</Project>
       <Name>Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Context\Context.csproj">
+      <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
+      <Name>Context</Name>
     </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{022E0DB7-0EEF-44A1-A3F0-17969ED19046}</Project>

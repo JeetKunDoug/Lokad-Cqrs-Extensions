@@ -1,5 +1,7 @@
 ﻿using Autofac;
 
+using Context;
+
 using Domain.Events;
 
 using EventStore;
@@ -26,7 +28,7 @@ namespace Client
             builder.UseProtoBufSerialization();
             builder.Domain(m => m.InAssemblyOf<MessageCreated>());
 
-            builder.Azure(config => config.AddAzureSender(storageConfig, "eventstore-sample-messages"));
+            builder.Azure(config => config.AddAzureSender(storageConfig, Queues.MESSAGES));
 
             builder.Storage(config => config.AtomicIsInAzure(storageConfig, s => s.WithAssemblyOf<MessageView>()));
 

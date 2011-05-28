@@ -32,7 +32,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonDomain">
-      <HintPath>..\..\..\Lokad.Cqrs.Extensions\bin\Debug\CommonDomain.dll</HintPath>
+      <HintPath>..\..\..\..\lib\CommonDomain\CommonDomain.dll</HintPath>
+    </Reference>
+    <Reference Include="EventStore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=7735eb81c0bd9948, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\lib\EventStore\bin\EventStore.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
       <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Portable.dll</HintPath>
@@ -50,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandHandlers\EditMessageHandler.cs" />
+    <Compile Include="CommandHandlers\ExtendIRepository.cs" />
     <Compile Include="Events\MessageEdited.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="CommandHandlers\CreateMessageHandler.cs" />
@@ -59,13 +64,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Lokad.Cqrs.Extensions\Lokad.Cqrs.Extensions.csproj">
-      <Project>{5E8C25DC-A387-495B-A209-93248810AAD6}</Project>
-      <Name>Lokad.Cqrs.Extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Commands\Commands.csproj">
       <Project>{48C13124-407F-4CE5-BDDD-6ED69FAE0D5C}</Project>
       <Name>Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Context\Context.csproj">
+      <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
+      <Name>Context</Name>
     </ProjectReference>
     <ProjectReference Include="..\Views\Views.csproj">
       <Project>{AA73526F-A1AB-414F-9F5C-5FF723A65FBF}</Project>

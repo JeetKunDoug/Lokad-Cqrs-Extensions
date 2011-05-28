@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonDomain;
 using CommonDomain.Persistence;
 
-namespace Lokad.Cqrs.Extensions.EventStore
+namespace Domain.CommandHandlers
 {
     public static class ExtendIRepository
     {

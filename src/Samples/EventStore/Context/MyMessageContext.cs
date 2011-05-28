@@ -6,7 +6,7 @@ using Lokad.Cqrs;
 
 using ProtoBuf;
 
-namespace Commands
+namespace Context
 {
     [ProtoContract]
     public class MyMessageContext
