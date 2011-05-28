@@ -31,6 +31,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 
+using Autofac;
+using Autofac.Core;
+
 using Commands;
 
 using Domain.Events;
@@ -50,7 +53,7 @@ namespace Client
 
         public Program(IMessageSender sender, IStoreEvents store)
         {
-            this.sender = sender;
+            this.sender = new SenderDecorator(sender);
             this.store = store;
             reader = new ConsoleReader();
             messages = new Dictionary<Guid, string>();
@@ -65,7 +68,7 @@ namespace Client
             {
                 Id = id,
                 Message = message
-            });
+            } );
 
             messages.Add(id, message);
         }

@@ -1,4 +1,8 @@
-﻿using Autofac;
+﻿using System;
+using System.Reflection;
+
+using Autofac;
+using Autofac.Core;
 
 using Context;
 
@@ -43,10 +47,8 @@ namespace Client
 
             CqrsClient cqrsClient = builder.Build();
 
-            var program = cqrsClient.Resolve<Program>();
-
-            program.Run();
-
+            ILifetimeScope scope = cqrsClient.Scope;
+            scope.Resolve<Program>().Run();
         }
 
         private static IStoreEvents ConfigureEventStore()

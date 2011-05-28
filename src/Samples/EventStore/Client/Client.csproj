@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="ConsoleReader.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="EnvelopeDecorator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
