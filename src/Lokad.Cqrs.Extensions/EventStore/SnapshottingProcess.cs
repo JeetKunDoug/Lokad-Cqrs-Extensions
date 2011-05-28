@@ -87,20 +87,20 @@ namespace Lokad.Cqrs.Extensions.EventStore
             if (streams.Length == 0)
                 return;
 
-            foreach (StreamHead s in streams)
+            foreach (StreamHead head in streams)
             {
-                IEventStream eventStream = eventStore.OpenStream(s.StreamId, s.HeadRevision, int.MaxValue);
+                IEventStream eventStream = eventStore.OpenStream(head.StreamId, head.HeadRevision, int.MaxValue);
 
                 EventMessage message = eventStream.CommittedEvents.Last();
 
                 if (message == null)
                     continue;
 
-                var snapshot = new Snapshot(s.StreamId, s.SnapshotRevision + 1, message);
+                var snapshot = new Snapshot(head.StreamId, head.SnapshotRevision + 1, message);
 
                 eventStore.AddSnapshot(snapshot);
 
-                observer.Notify(new SnapshotTaken(s.StreamId, s.HeadRevision));
+                observer.Notify(new SnapshotTaken(head.StreamId, head.HeadRevision));
             }
         }
 
