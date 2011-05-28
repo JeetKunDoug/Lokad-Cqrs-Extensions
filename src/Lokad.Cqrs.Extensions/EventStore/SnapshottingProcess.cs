@@ -99,7 +99,7 @@ namespace Lokad.Cqrs.Extensions.EventStore
 
                 snapshots.AddSnapshot(snapshot);
 
-                observer.Notify(new SnapshotTaken(s.StreamId, s.SnapshotRevision));
+                observer.Notify(new SnapshotTaken(s.StreamId, s.HeadRevision));
             }
         }
 

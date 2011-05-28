@@ -12,6 +12,11 @@ namespace Lokad.Cqrs.Extensions.EventStore.Events
 
         public Guid StreamId { get; private set; }
         public int Revision { get; private set; }
+
+        public override string ToString()
+        {
+            return string.Format("Took snapshot of stream [{0}] at revison {1}", StreamId, Revision);
+        }
     }
 
 }
