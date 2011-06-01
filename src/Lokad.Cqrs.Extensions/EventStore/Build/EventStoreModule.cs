@@ -110,7 +110,10 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
             var messages = events.Select(e => e.Body).ToArray();
 
-            sender.SendBatch(messages, b => AddHeadersToEnvelope(commit.Headers, b));
+            foreach (var message in messages)
+            {
+                sender.SendOne(message, b => AddHeadersToEnvelope(commit.Headers, b));
+            }
         }
 
         private static void AddHeadersToEnvelope(Dictionary<string, object> headers, EnvelopeBuilder b)

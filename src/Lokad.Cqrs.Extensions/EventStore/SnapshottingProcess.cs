@@ -84,6 +84,7 @@ namespace Lokad.Cqrs.Extensions.EventStore
 
         private void CreateSnapshots(StreamHead[] streams)
         {
+            //TODO: Create IMementos to store in snapshot. Not sure how to do that ATM.
             if (streams.Length == 0)
                 return;
 
