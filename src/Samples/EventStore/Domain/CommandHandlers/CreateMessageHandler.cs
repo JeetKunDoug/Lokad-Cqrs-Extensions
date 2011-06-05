@@ -25,14 +25,14 @@ namespace Domain.CommandHandlers
 
         public void Consume(CreateMessage message)
         {
-            var entity = repository.GetById<Message>(message.Id, int.MaxValue);
+            var aggregate = repository.GetById<Message>(message.Id, int.MaxValue);
 
-            entity.Create(message.Message);
+            aggregate.CreateMessage(message.Message);
 
             var context = contextFactory();
 
             //Save the context values into the eventstream's headers.
-            repository.Save(entity, context.ApplyTo);
+            repository.Save(aggregate, context.ApplyTo);
         }
 
         #endregion

@@ -19,7 +19,7 @@ namespace Domain
             Id = id;
         }
 
-        public void Create(string message)
+        public void CreateMessage(string message)
         {
             RaiseEvent(new MessageCreated
             {
