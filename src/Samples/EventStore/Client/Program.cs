@@ -41,6 +41,9 @@ using Domain.Events;
 using EventStore;
 
 using Lokad.Cqrs;
+using Lokad.Cqrs.Feature.AtomicStorage;
+
+using Views;
 
 namespace Client
 {
@@ -48,15 +51,15 @@ namespace Client
     {
         private readonly IMessageSender sender;
         private readonly IStoreEvents store;
+        private readonly NuclearStorage storage;
         private readonly ConsoleReader reader;
-        private readonly Dictionary<Guid, string> messages;
 
-        public Program(IMessageSender sender, IStoreEvents store)
+        public Program(IMessageSender sender, IStoreEvents store, NuclearStorage storage)
         {
             this.sender = new SenderDecorator(sender);
             this.store = store;
+            this.storage = storage;
             reader = new ConsoleReader();
-            messages = new Dictionary<Guid, string>();
         }
 
         private void CreateMessage()
@@ -69,13 +72,13 @@ namespace Client
                 Id = id,
                 Message = message
             } );
-
-            messages.Add(id, message);
         }
 
         private void EditMessage()
         {
-            var pair = reader.GetValueOf("Pick message", messages, p=>p.Value);
+            var index = storage.GetSingletonOrNew<MessageIndex>();
+
+            var pair = reader.GetValueOf("Pick message", index.Messages, p=>p.Value);
 
             Console.Out.WriteLine("Original Message:");
             Console.Out.WriteLine(pair.Value);
@@ -87,13 +90,13 @@ namespace Client
                 Id = pair.Key,
                 Message = message
             });
-
-            messages[pair.Key] = message;
         }
 
         private void ReplayMessageEvents()
         {
-            var pair = reader.GetValueOf("Pick message", messages, p => p.Value);
+            var index = storage.GetSingletonOrNew<MessageIndex>();
+
+            var pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
 
             var stream = store.OpenStream(pair.Key, 0, int.MaxValue);
 

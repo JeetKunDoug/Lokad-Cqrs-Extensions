@@ -25,7 +25,9 @@ namespace Domain.CommandHandlers
 
         public void Consume(CreateMessage message)
         {
-            var entity = new Message(message.Id, message.Message);
+            var entity = repository.GetById<Message>(message.Id, int.MaxValue);
+
+            entity.Create(message.Message);
 
             var context = contextFactory();
 

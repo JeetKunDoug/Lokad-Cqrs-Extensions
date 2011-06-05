@@ -19,11 +19,11 @@ namespace Domain
             Id = id;
         }
 
-        public Message(Guid id, string message) : this(id)
+        public void Create(string message)
         {
             RaiseEvent(new MessageCreated
             {
-                Id = id,
+                Id = Id,
                 Message = message,
                 UtcCreated = DateTime.UtcNow
             });

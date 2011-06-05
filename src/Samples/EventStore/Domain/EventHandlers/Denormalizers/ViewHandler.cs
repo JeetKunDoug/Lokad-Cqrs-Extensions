@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Context;
@@ -9,6 +10,8 @@ using Lokad.Cqrs;
 using Lokad.Cqrs.Feature.AtomicStorage;
 
 using Views;
+
+using System.Linq;
 
 namespace Domain.EventHandlers.Denormalizers
 {
@@ -39,6 +42,13 @@ namespace Domain.EventHandlers.Denormalizers
             };
 
             storage.AddEntity(message.Id, entity);
+
+            storage.AddOrUpdateSingleton(() =>
+            {
+                var index = new MessageIndex();
+                index.Messages.Add(message.Id, message.Message);
+                return index;
+            }, i => i.Messages.Add(message.Id, message.Message));
         }
 
         #endregion
@@ -56,6 +66,11 @@ namespace Domain.EventHandlers.Denormalizers
                 v.Context = context;
                 v.Message = message.Message;
                 v.UtcLastModified = message.UtcEdited;
+            });
+
+            storage.UpdateSingleton<MessageIndex>(i =>
+            {
+                i.Messages[message.Id] = message.Message;
             });
         }
 

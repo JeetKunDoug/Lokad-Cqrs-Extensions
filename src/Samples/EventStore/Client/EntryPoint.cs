@@ -13,6 +13,7 @@ using EventStore;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Client;
+using Lokad.Cqrs.Feature.AtomicStorage;
 
 using Microsoft.WindowsAzure;
 
@@ -33,8 +34,12 @@ namespace Client
             builder.Domain(m => m.InAssemblyOf<MessageCreated>());
 
             builder.Azure(config => config.AddAzureSender(storageConfig, Queues.MESSAGES));
-
-            builder.Storage(config => config.AtomicIsInAzure(storageConfig, s => s.WithAssemblyOf<MessageView>()));
+            
+            builder.Storage(config => config.AtomicIsInAzure(storageConfig, s =>
+            {
+                s.WithAssemblyOf<MessageView>();
+                s.CustomStaticSerializer(new AtomicStorageSerializerWithProtoBuf());
+            }));
 
             builder.Advanced.ConfigureContainer(b =>
             {
