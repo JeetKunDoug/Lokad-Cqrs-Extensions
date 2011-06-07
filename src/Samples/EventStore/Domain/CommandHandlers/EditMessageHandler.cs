@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Commands;
 
@@ -25,14 +26,24 @@ namespace Domain.CommandHandlers
 
         public void Consume(EditMessage message)
         {
-            var entity = repository.GetById<Message>(message.Id, int.MaxValue);
-
-            entity.ChangeMessage(message.Message);
-
             var context = contextFactory();
 
-            //Save the context values into the eventstream's headers.
-            repository.Save(entity, context.ApplyTo);
+            var transaction = repository.BeginAggregateTransaction<Message>(message.Id, context.ApplyTo);
+            
+            using(transaction)
+            {
+                Message entity = transaction.Aggregate;
+
+                try
+                {
+                    entity.ChangeMessage(message.Message);
+                }
+                catch (Exception e)
+                {
+                    Trace.TraceError(e.ToString());
+                    transaction.Rollback();
+                }
+            }
         }
 
         #endregion

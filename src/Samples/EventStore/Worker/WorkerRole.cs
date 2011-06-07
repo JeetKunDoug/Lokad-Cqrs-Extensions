@@ -105,7 +105,8 @@ namespace Worker
                 config.Hooks(p => p.Add<MyNullPipelineHook>());
                 config.Snapshots(s =>
                 {
-                    s.Enable();
+                    //snapshotting isn't implemented correctly right now.
+                    s.Disable();
                     s.CheckEvery(TimeSpan.FromSeconds(30));
                     //set this to something reasonable like 250. 
                     //It's so low here to demonstrate background "out-of-band" snapshotting.

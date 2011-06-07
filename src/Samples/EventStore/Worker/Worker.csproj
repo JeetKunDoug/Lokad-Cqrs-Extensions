@@ -36,6 +36,10 @@
     <Reference Include="Autofac">
       <HintPath>..\..\..\..\lib\autofac\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="CommonDomain, Version=1.2.0.0, Culture=neutral, PublicKeyToken=ec37a15dc44010cd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\lib\CommonDomain\CommonDomain.dll</HintPath>
+    </Reference>
     <Reference Include="EventStore">
       <HintPath>..\..\..\..\lib\EventStore\bin\EventStore.dll</HintPath>
     </Reference>

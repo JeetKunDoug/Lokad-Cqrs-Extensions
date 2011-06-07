@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHandlers\AggregateTransaction.cs" />
     <Compile Include="CommandHandlers\EditMessageHandler.cs" />
     <Compile Include="CommandHandlers\ExtendIRepository.cs" />
     <Compile Include="Events\MessageEdited.cs" />
