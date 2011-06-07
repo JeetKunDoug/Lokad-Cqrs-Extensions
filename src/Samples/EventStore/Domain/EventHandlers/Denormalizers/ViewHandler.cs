@@ -41,7 +41,7 @@ namespace Domain.EventHandlers.Denormalizers
                 UtcCreated = message.UtcCreated
             };
 
-            storage.AddEntity(message.Id, entity);
+            storage.AddOrUpdateEntity(message.Id, entity);
 
             storage.AddOrUpdateSingleton(() =>
             {
