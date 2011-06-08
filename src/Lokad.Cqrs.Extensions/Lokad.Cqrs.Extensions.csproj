@@ -73,7 +73,7 @@
     <Compile Include="EventStore\PipelineHookSystemObserver.cs" />
     <Compile Include="EventStore\SnapshottingProcess.cs" />
     <Compile Include="EventStore\Build\AggregateFactory.cs" />
-    <Compile Include="EventStore\Build\AzureConfigurationConnectionFactory.cs" />
+    <Compile Include="EventStore\Build\DirectConnectionFactory.cs" />
     <Compile Include="EventStore\Build\EventStoreModule.cs" />
     <Compile Include="EventStore\Build\ExtendWireup.cs" />
     <Compile Include="EventStore\Build\ExtendCqrsEngineBuilder.cs" />

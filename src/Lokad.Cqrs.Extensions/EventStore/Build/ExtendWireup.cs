@@ -33,9 +33,9 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 {
     public static class ExtendWireup
     {
-        public static SqlPersistenceWireup UsingSqlAzurePersistence(this Wireup wireup, string connectionName)
+        public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, string connectionName, string connectionString)
         {
-            var factory = new AzureConfigurationConnectionFactory(connectionName);
+            var factory = new DirectConnectionFactory(connectionName, connectionString);
 
             return wireup.UsingSqlPersistence(factory);
         }

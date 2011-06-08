@@ -101,7 +101,9 @@ namespace Worker
             //NOTE: Event Store Initialization
             builder.ConfigureJonathanOliverEventStore(config =>
             {
-                config.ConnectionStringSettingName("EventStoreConnectionString");
+                var connectionString = AzureSettingsProvider.GetString("EventStoreConnectionString");
+
+                config.ConnectionString(connectionString);
                 config.Hooks(p => p.Add<MyNullPipelineHook>());
                 config.Snapshots(s =>
                 {

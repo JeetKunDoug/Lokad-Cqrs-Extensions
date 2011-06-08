@@ -31,6 +31,6 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 {
     public interface IPersistanceConfiguration
     {
-        IPipelineConfiguration ConnectionStringSettingName(string connectionString);
+        IPipelineConfiguration ConnectionString(string connectionString);
     }
 }

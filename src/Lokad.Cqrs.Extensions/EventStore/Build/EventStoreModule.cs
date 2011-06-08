@@ -51,11 +51,11 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
     {
         private readonly ContainerBuilder builder = new ContainerBuilder();
         private IConstructAggregates aggregateConstructor = AggregateFactory.Default;
-        private string eventStoreConnectionString = "EventStoreConnectionString";
+        private string eventStoreConnectionString = "";
 
         #region IPersistanceConfiguration Members
 
-        public IPipelineConfiguration ConnectionStringSettingName(string connectionString)
+        public IPipelineConfiguration ConnectionString(string connectionString)
         {
             eventStoreConnectionString = connectionString;
             return this;
@@ -90,8 +90,7 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
             var pipelineHooks = context.Resolve<IEnumerable<IPipelineHook>>();
 
-            var store = Wireup.Init()
-                .UsingSqlAzurePersistence(eventStoreConnectionString)
+            var store = Wireup.Init().UsingSqlPersistence("EventStore", eventStoreConnectionString)
                 .InitializeStorageEngine()
                 .UsingJsonSerialization()
                 .HookIntoPipelineUsing(pipelineHooks)
