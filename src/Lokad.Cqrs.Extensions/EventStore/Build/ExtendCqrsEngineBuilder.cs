@@ -29,7 +29,6 @@
 
 using System;
 
-using Lokad.Cqrs.Build.Client;
 using Lokad.Cqrs.Build.Engine;
 
 namespace Lokad.Cqrs.Extensions.EventStore.Build

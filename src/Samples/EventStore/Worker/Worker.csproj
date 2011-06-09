@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyNullPipelineHook.cs" />
     <Compile Include="WorkerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -100,6 +99,10 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{022E0DB7-0EEF-44A1-A3F0-17969ED19046}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{E5F46219-9040-4D98-AF9A-DAC713C0694B}</Project>
+      <Name>Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\Views\Views.csproj">
       <Project>{AA73526F-A1AB-414F-9F5C-5FF723A65FBF}</Project>

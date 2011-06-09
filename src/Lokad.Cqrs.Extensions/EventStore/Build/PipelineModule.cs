@@ -37,17 +37,18 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
     public sealed class PipelineModule : IModule
     {
         private readonly ContainerBuilder builder = new ContainerBuilder();
-
-        public PipelineModule()
-        {
-            builder.RegisterType<PipelineHookSystemObserver>()
-                .SingleInstance().As<IPipelineHook>();
-        }
+        private bool enableSystemObserver = false;
 
         #region Implementation of IModule
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
+            if(enableSystemObserver)
+            {
+                builder.RegisterType<PipelineHookSystemObserver>()
+                    .SingleInstance().As<IPipelineHook>();
+            }
+
             builder.Update(componentRegistry);
         }
 
@@ -62,6 +63,12 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
         public PipelineModule Add(IPipelineHook hook)
         {
             builder.RegisterInstance(hook).SingleInstance().As<IPipelineHook>();
+            return this;
+        }
+
+        public PipelineModule EnableSystemObservation()
+        {
+            enableSystemObserver = true;
             return this;
         }
     }

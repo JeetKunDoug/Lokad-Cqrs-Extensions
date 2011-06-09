@@ -52,10 +52,14 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
         public IAggregate Build(Type type, Guid id, IMemento snapshot)
         {
-            ConstructorInfo constructor = type.GetConstructor(
-                BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (Guid)}, null);
+            const BindingFlags FLAGS = BindingFlags.NonPublic | BindingFlags.Instance;
 
-            return constructor.Invoke(new object[] {id}) as IAggregate;
+            var types = snapshot == null ? new[] { typeof(Guid) } : new[] { typeof(Guid), typeof(IMemento) };
+            var args = snapshot == null ? new object[] { id } : new object[] { id, snapshot };
+
+            ConstructorInfo constructor = type.GetConstructor(FLAGS, null, types, null);
+
+            return constructor.Invoke(args) as IAggregate;
         }
 
         #endregion

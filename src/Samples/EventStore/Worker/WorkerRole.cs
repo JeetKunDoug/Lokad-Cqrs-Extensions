@@ -47,6 +47,8 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
+using Shared;
+
 using Views;
 
 namespace Worker
@@ -87,7 +89,6 @@ namespace Worker
 
             builder.Azure(config =>
             {
-
                 config.AddAzureProcess(storageConfig, Queues.MESSAGES);
                 config.AddAzureSender(storageConfig, Queues.MESSAGES);
             });

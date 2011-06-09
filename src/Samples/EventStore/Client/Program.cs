@@ -43,6 +43,8 @@ using EventStore;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Feature.AtomicStorage;
 
+using Shared;
+
 using Views;
 
 namespace Client

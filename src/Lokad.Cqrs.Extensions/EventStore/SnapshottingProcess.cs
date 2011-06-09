@@ -28,9 +28,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
+using CommonDomain;
+using CommonDomain.Persistence;
 
 using EventStore;
 using EventStore.Persistence;
@@ -44,12 +49,20 @@ namespace Lokad.Cqrs.Extensions.EventStore
         private readonly TimeSpan checkInterval;
         private readonly ISystemObserver observer;
         private readonly IStoreEvents eventStore;
+        private readonly Func<string, Type> aggregateTypeResolver;
+        private readonly IRepository repository;
         private readonly int threshold;
 
-        public SnapshottingProcess(IStoreEvents eventStore, int threshold, TimeSpan checkInterval,
-                                   ISystemObserver observer)
+        public SnapshottingProcess(IStoreEvents eventStore, 
+            Func<string, Type> aggregateTypeResolver, 
+            IRepository repository, 
+            int threshold, 
+            TimeSpan checkInterval,
+            ISystemObserver observer)
         {
             this.eventStore = eventStore;
+            this.aggregateTypeResolver = aggregateTypeResolver;
+            this.repository = repository;
             this.checkInterval = checkInterval;
             this.observer = observer;
             this.threshold = threshold;
@@ -82,28 +95,36 @@ namespace Lokad.Cqrs.Extensions.EventStore
             });
         }
 
-        private void CreateSnapshots(StreamHead[] streams)
+    private void CreateSnapshots(IEnumerable<StreamHead> streams)
+    {
+        foreach (StreamHead head in streams)
         {
-            //TODO: Create IMementos to store in snapshot. Not sure how to do that ATM.
-            if (streams.Length == 0)
-                return;
+            //NOTE: This uses a patched version of EventStore that loads commit headers in OptimisticEventStream.PopulateStream()
+            // <code>
+            // this.identifiers.Add(commit.CommitId);
+            // this.headers = this.headers.Union(commit.Headers).ToDictionary(k => k.Key, k => k.Value);
+            // </code>
+            var stream = eventStore.OpenStream(head.StreamId, int.MinValue, int.MaxValue);
 
-            foreach (StreamHead head in streams)
-            {
-                IEventStream eventStream = eventStore.OpenStream(head.StreamId, head.HeadRevision, int.MaxValue);
+            //NOTE: Nasty hack but it works.
+            var aggregateType = stream.UncommittedHeaders.Where(p=>p.Key=="AggregateType").First();
+            var type = aggregateTypeResolver(aggregateType.Value.ToString());
 
-                EventMessage message = eventStream.CommittedEvents.Last();
+            MethodInfo methodInfo = typeof(IRepository).GetMethod("GetById");
+            MethodInfo method = methodInfo.MakeGenericMethod(type);
 
-                if (message == null)
-                    continue;
+            object o = method.Invoke(repository, new object[]{head.StreamId, head.HeadRevision});
+            var aggregate = (IAggregate) o;
+            
+            IMemento memento = aggregate.GetSnapshot();
 
-                var snapshot = new Snapshot(head.StreamId, head.SnapshotRevision + 1, message);
+            var snapshot = new Snapshot(head.StreamId, head.HeadRevision, memento);
 
-                eventStore.AddSnapshot(snapshot);
+            eventStore.AddSnapshot(snapshot);
 
-                observer.Notify(new SnapshotTaken(head.StreamId, head.HeadRevision));
-            }
+            observer.Notify(new SnapshotTaken(head.StreamId, head.HeadRevision));
         }
+    }
 
         #endregion
     }

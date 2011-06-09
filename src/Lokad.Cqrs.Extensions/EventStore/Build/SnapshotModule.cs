@@ -38,6 +38,7 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
     {
         private readonly ContainerBuilder builder = new ContainerBuilder();
         private TimeSpan checkInterval = TimeSpan.FromMinutes(10);
+        private Func<string, Type> aggregateTypeResolver = s => Type.GetType(s);
         private int maxThreshold = 250;
         private bool enabled;
 
@@ -57,7 +58,8 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
                 .WithParameters(new[]
                 {
                     TypedParameter.From(maxThreshold),
-                    TypedParameter.From(checkInterval)
+                    TypedParameter.From(checkInterval),
+                    TypedParameter.From(aggregateTypeResolver)
                 }).SingleInstance()
                 .As<IEngineProcess>();
 
@@ -87,6 +89,12 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
         public SnapshotModule CheckEvery(TimeSpan interval)
         {
             checkInterval = interval;
+            return this;
+        }
+
+        public SnapshotModule AggregateTypeResolver(Func<string,Type> resolver)
+        {
+            aggregateTypeResolver = resolver;
             return this;
         }
     }
