@@ -27,10 +27,7 @@
 
 #endregion
 
-using System;
 using System.Diagnostics;
-
-using Context;
 
 using Domain.Events;
 
@@ -43,13 +40,11 @@ namespace Domain.EventHandlers.Denormalizers
 {
     public class ViewHandler : Define.Subscribe<MessageCreated>, Define.Subscribe<MessageEdited>
     {
-        private readonly Func<MyMessageContext> contextFactory;
         private readonly NuclearStorage storage;
 
-        public ViewHandler(NuclearStorage storage, Func<MyMessageContext> contextFactory)
+        public ViewHandler(NuclearStorage storage)
         {
             this.storage = storage;
-            this.contextFactory = contextFactory;
         }
 
         #region Implementation of IConsume<in AggregateCreated>
@@ -58,11 +53,8 @@ namespace Domain.EventHandlers.Denormalizers
         {
             Trace.TraceInformation("DENORMALIZING MESSAGE CREATED EVENT {0}[{1}]...", message.Message, message.Id);
 
-            MyMessageContext context = contextFactory();
-
             var entity = new MessageView
             {
-                Context = context,
                 Message = message.Message,
                 UtcCreated = message.UtcCreated
             };
@@ -85,11 +77,8 @@ namespace Domain.EventHandlers.Denormalizers
         {
             Trace.TraceInformation("DENORMALIZING MESSAGE EDITED EVENT {0}[{1}]...", message.Message, message.Id);
 
-            MyMessageContext context = contextFactory();
-
             storage.UpdateEntity<MessageView>(message.Id, v =>
             {
-                v.Context = context;
                 v.Message = message.Message;
                 v.UtcLastModified = message.UtcEdited;
             });

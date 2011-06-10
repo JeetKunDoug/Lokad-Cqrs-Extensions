@@ -88,19 +88,19 @@
       <Project>{5E8C25DC-A387-495B-A209-93248810AAD6}</Project>
       <Name>Lokad.Cqrs.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Context\Context.csproj">
+      <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
+      <Name>Context</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Commands\Commands.csproj">
       <Project>{48C13124-407F-4CE5-BDDD-6ED69FAE0D5C}</Project>
       <Name>Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Context\Context.csproj">
-      <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
-      <Name>Context</Name>
     </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{022E0DB7-0EEF-44A1-A3F0-17969ED19046}</Project>
       <Name>Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Shared\Shared.csproj">
+    <ProjectReference Include="..\..\Shared\Shared.csproj">
       <Project>{E5F46219-9040-4D98-AF9A-DAC713C0694B}</Project>
       <Name>Shared</Name>
     </ProjectReference>

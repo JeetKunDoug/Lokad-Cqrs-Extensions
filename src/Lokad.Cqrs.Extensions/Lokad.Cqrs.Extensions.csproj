@@ -34,6 +34,9 @@
     <Reference Include="Autofac">
       <HintPath>..\..\lib\autofac\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\lib\rhino.security\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="CommonDomain, Version=1.2.0.0, Culture=neutral, PublicKeyToken=ec37a15dc44010cd, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\CommonDomain\CommonDomain.dll</HintPath>
@@ -46,16 +49,31 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\EventStore\plugins\serialization\json-net\EventStore.Serialization.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\rhino.security\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Cqrs.Azure">
       <HintPath>..\..\lib\lokad-cqrs\Lokad.Cqrs.Azure.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
       <HintPath>..\..\lib\lokad-cqrs\Lokad.Cqrs.Portable.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\lib\rhino.security\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\..\lib\rhino.security\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.ByteCode.Castle">
+      <HintPath>..\..\lib\rhino.security\NHibernate.ByteCode.Castle.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\..\lib\protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Rhino.Security">
+      <HintPath>..\..\lib\rhino.security\Rhino.Security.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -80,10 +98,40 @@
     <Compile Include="EventStore\Build\EventStoreModule.cs" />
     <Compile Include="EventStore\Build\ExtendWireup.cs" />
     <Compile Include="EventStore\Build\ExtendCqrsEngineBuilder.cs" />
+    <Compile Include="Permissions\AutofacServiceLocator.cs" />
+    <Compile Include="Permissions\Build\ExtendCqrsClientBuilder.cs" />
+    <Compile Include="Permissions\Build\ExtendCqrsEngineBuilder.cs" />
+    <Compile Include="Permissions\Build\Filter.cs" />
+    <Compile Include="Permissions\Build\InformationExtractorModule.cs" />
+    <Compile Include="Permissions\Build\OperationCreator.cs" />
+    <Compile Include="Permissions\Build\PermissionsModule.cs" />
+    <Compile Include="Permissions\Build\ServiceLocatorSetter.cs" />
+    <Compile Include="Permissions\DisposableAction.cs" />
+    <Compile Include="Permissions\EntityInformationExtractor.cs" />
+    <Compile Include="Permissions\ExtendPermissionUser.cs" />
+    <Compile Include="Permissions\IPermissionReader.cs" />
+    <Compile Include="Permissions\IPermissionSystem.cs" />
+    <Compile Include="Permissions\IPermissionWriter.cs" />
+    <Compile Include="Permissions\IProvideOperations.cs" />
+    <Compile Include="Permissions\ISecurableEntity.cs" />
+    <Compile Include="Permissions\PermissionsUser.cs" />
+    <Compile Include="Permissions\PermissionSystem.cs" />
+    <Compile Include="Permissions\Specification\AndAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\AuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\AuthorizationSpecificationBuilder.cs" />
+    <Compile Include="Permissions\Specification\CompositeAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\ExtendIAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\IAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\IAuthorizationSpecificationBuilder.cs" />
+    <Compile Include="Permissions\Specification\NotAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\OrAuthorizationSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Permissions\PermissionsUser.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

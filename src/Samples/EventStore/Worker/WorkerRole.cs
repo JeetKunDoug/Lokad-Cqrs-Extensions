@@ -39,7 +39,6 @@ using Domain.CommandHandlers;
 using Lokad.Cqrs;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
-using Lokad.Cqrs.Extensions.EventStore;
 using Lokad.Cqrs.Extensions.EventStore.Build;
 using Lokad.Cqrs.Feature.AtomicStorage;
 

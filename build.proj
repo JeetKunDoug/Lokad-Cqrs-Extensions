@@ -1,0 +1,37 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="CleanUp">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <Root>$(MSBuildProjectDirectory)</Root>
+    <ProjectDirectory>$(Root)\src\Lokad.Cqrs.Extensions</ProjectDirectory>
+    <Project>$(ProjectDirectory)\Lokad.Cqrs.Extensions.csproj</Project>
+    <PackageDirectory>$(Root)\packages</PackageDirectory>
+    <Artifacts>$(Root)\output</Artifacts>
+    <Publish>$(Root)\publish</Publish>
+  </PropertyGroup>
+
+  <Target Name="Build" DependsOnTargets="CleanArtifacts" BeforeTargets="CleanUp">
+    <Message Text="**COMPILE**" />
+    <PropertyGroup>
+      <SolutionProperties>Configuration=$(Configuration);OutputPath=$(Artifacts)\;SolutionDir=$(Root)\..\;TargetDir=$(Artifacts)\$(Configuration)\</SolutionProperties>
+    </PropertyGroup>
+    <MSBuild Projects="$(Project)" Targets="Clean;Build" Properties="$(SolutionProperties)" />
+  </Target>
+  
+  <Target Name="CleanUp">
+    <Message Text="**CLEANUP**" />
+    <ItemGroup>
+      <Files Include="$(Artifacts)\*.*"  />
+    </ItemGroup>
+    <MakeDir ContinueOnError="true" Directories="$(Publish)" />
+    <Copy SourceFiles="@(Files)" DestinationFolder="$(Publish)"  />
+    <RemoveDir ContinueOnError="true" Directories="$(Artifacts)" />
+  </Target>
+  
+  <Target Name="CleanArtifacts">
+    <Message Text="**CLEAN ARTIFACTS**" />
+    <RemoveDir ContinueOnError="true" Directories="$(Artifacts)" />
+    <RemoveDir ContinueOnError="true" Directories="$(Publish)" />
+    <MakeDir ContinueOnError="true" Directories="$(Artifacts)" />
+  </Target>
+
+</Project>

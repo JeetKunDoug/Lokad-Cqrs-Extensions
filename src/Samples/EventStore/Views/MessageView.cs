@@ -29,8 +29,6 @@
 
 using System;
 
-using Context;
-
 using Lokad.Cqrs;
 
 using ProtoBuf;
@@ -41,15 +39,12 @@ namespace Views
     public class MessageView : Define.AtomicEntity
     {
         [ProtoMember(1)]
-        public MyMessageContext Context { get; set; }
-
-        [ProtoMember(2)]
         public string Message { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(2)]
         public DateTime UtcCreated { get; set; }
 
-        [ProtoMember(4)]
+        [ProtoMember(3)]
         public DateTime UtcLastModified { get; set; }
     }
 }

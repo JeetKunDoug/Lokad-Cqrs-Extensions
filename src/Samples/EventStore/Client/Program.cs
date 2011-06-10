@@ -31,9 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 
-using Autofac;
-using Autofac.Core;
-
 using Commands;
 
 using Domain.Events;

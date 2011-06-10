@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -12,7 +11,6 @@ using Context;
 
 using Domain.CommandHandlers;
 
-using Lokad.Cqrs;
 using Lokad.Cqrs.Build;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Extensions;

@@ -55,10 +55,6 @@
       <Project>{48C13124-407F-4CE5-BDDD-6ED69FAE0D5C}</Project>
       <Name>Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Context\Context.csproj">
-      <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
-      <Name>Context</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
