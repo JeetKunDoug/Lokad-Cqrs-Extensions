@@ -84,7 +84,7 @@ namespace Domain.CommandHandlers
 
         private static void Authorize(Guid id, PermissionsUser user)
         {
-            IAuthorizationSpecification<Note> specification = user.Spec<Note>(id).BuildFor("add");
+            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For("add");
 
             if (specification.IsDenied())
             {

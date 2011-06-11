@@ -8,30 +8,38 @@ namespace Lokad.Cqrs.Extensions.Permissions
 {
     public static class ExtendPermissionUser
     {
-        private static IPermissionSystem Permissions
+        public static IAuthorizationBuilder<T> Authorization<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
-            get { return ServiceLocator.Current.GetInstance<IPermissionSystem>(); }
-        }
-
-        public static IAuthorizationSpecificationBuilder<T> Spec<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
-        {
-            return new AuthorizationSpecificationBuilder<T>(Permissions, user, id);
+            return new AuthorizationBuilder<T>(user, id);
         }
 
         public static IAuthorizationSpecification<T> Edit<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
-            return new AuthorizationSpecificationBuilder<T>(Permissions, user, id).BuildFor("edit");
+            return Authorization<T>(user, id).For("edit");
         }
 
         public static IAuthorizationSpecification<T> Delete<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
-            return new AuthorizationSpecificationBuilder<T>(Permissions, user, id).BuildFor("delete");
+            return Authorization<T>(user, id).For("delete");
         }
 
-        public static void TakeOwnership<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
+        public static void TakeOwnershipOf<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
-            var builder = new AuthorizationSpecificationBuilder<T>(Permissions, user, id);
-            Permissions.Allow(builder.RootOperation, p => p.For(user).On(new T {SecurityKey = id}).DefaultLevel().Save());
+            var builder = new AuthorizationBuilder<T>(user, id);
+            var specification = builder.ForRoot();
+            var writer = ServiceLocator.Current.GetInstance<IPermissionWriter>();
+            writer.Allow(builder.RootOperation, p=>p.For(user)
+                .On(builder.Entity));
+        }
+
+        public static bool IsAnonymous(this PermissionsUser user)
+        {
+            return user.Equals(PermissionsUser.Anonymous);
+        }
+
+        public static bool NotAnonymous(this PermissionsUser user)
+        {
+            return !IsAnonymous(user);
         }
     }
 }

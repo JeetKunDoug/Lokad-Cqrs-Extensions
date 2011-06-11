@@ -70,7 +70,7 @@ namespace InMemoryClient
             //NOTE: Permissions Initialization
             builder.Permissions(config =>
             {
-                const string CONNECTION_STRING = @"Data Source=.\sqlexpress;Initial Catalog=lokad-cqrs-permissions;Integrated Security=True;Pooling=False";
+                const string CONNECTION_STRING = @"Data Source=.\;Initial Catalog=lokad-cqrs-permissions;Integrated Security=True;Pooling=False";
 
                 config.InitializeDatabase();
 

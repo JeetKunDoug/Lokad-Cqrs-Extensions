@@ -46,6 +46,10 @@
     <Reference Include="Lokad.Cqrs.Azure">
       <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Azure.dll</HintPath>
     </Reference>
+    <Reference Include="Lokad.Cqrs.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\publish\Lokad.Cqrs.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
       <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Portable.dll</HintPath>
     </Reference>
@@ -84,10 +88,6 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Lokad.Cqrs.Extensions\Lokad.Cqrs.Extensions.csproj">
-      <Project>{5E8C25DC-A387-495B-A209-93248810AAD6}</Project>
-      <Name>Lokad.Cqrs.Extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Context\Context.csproj">
       <Project>{D3CFDCD6-EE15-4746-84BA-690D8FEE7BF5}</Project>
       <Name>Context</Name>

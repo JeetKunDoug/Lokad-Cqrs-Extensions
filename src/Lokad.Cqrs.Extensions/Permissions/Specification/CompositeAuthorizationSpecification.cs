@@ -25,6 +25,11 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             return result;
         }
 
+        public bool IsAllowed()
+        {
+            return !IsDenied();
+        }
+
         public string AuthorizationInformation
         {
             get { return information.ToString(); }

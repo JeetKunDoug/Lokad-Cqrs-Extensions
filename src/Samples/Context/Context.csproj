@@ -35,10 +35,10 @@
       <HintPath>..\..\..\publish\Lokad.Cqrs.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
-      <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Portable.dll</HintPath>
+      <HintPath>..\..\..\publish\Lokad.Cqrs.Portable.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\lib\protobuf-net\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\publish\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="Rhino.Security">
       <HintPath>..\..\..\publish\Rhino.Security.dll</HintPath>

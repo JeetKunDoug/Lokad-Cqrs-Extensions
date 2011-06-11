@@ -32,10 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EventStore">
-      <HintPath>..\..\..\..\lib\EventStore\bin\EventStore.dll</HintPath>
+      <HintPath>..\..\..\publish\EventStore.dll</HintPath>
     </Reference>
     <Reference Include="Lokad.Cqrs.Portable">
-      <HintPath>..\..\..\..\lib\lokad-cqrs\Lokad.Cqrs.Portable.dll</HintPath>
+      <HintPath>..\..\..\publish\Lokad.Cqrs.Portable.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

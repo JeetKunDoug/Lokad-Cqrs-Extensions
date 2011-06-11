@@ -15,6 +15,11 @@ namespace InMemoryClient
             yield return "/message/view";
             yield return "/message/delete";
             yield return "/note/add";
+            yield return "/note/delete";
+            yield return "/note/create";
+            yield return "/note/view";
+            yield return "/note/do";
+            yield return "/note/edit";
         }
 
         #endregion

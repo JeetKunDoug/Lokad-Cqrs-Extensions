@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Lokad.Cqrs.Extensions.Permissions.Specification;
+
 using Rhino.Security;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Model;

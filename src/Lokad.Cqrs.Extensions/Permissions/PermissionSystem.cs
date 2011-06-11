@@ -42,7 +42,7 @@ using Rhino.Security.Model;
 
 namespace Lokad.Cqrs.Extensions.Permissions
 {
-    class PermissionSystem : IPermissionSystem
+    internal class PermissionSystem : IPermissionSystem
     {
         private readonly IPermissionsBuilderService builderService;
         private readonly IPermissionsService permissionsService;
@@ -134,7 +134,10 @@ namespace Lokad.Cqrs.Extensions.Permissions
 
         public void Deny(string operation, Action<IForPermissionBuilder> config)
         {
-            config(builderService.Deny(operation));
+            using (BeginTransaction())
+            {
+                config(builderService.Deny(operation));
+            }
         }
 
         public Operation CreateOperation(string operation)
@@ -157,10 +160,15 @@ namespace Lokad.Cqrs.Extensions.Permissions
 
         public void ClearOperations()
         {
-            foreach (var operation in GetOperations())
+            foreach (Operation operation in GetOperations())
             {
                 ClearOperations(operation);
             }
+        }
+
+        public void Flush()
+        {
+            session.Flush();
         }
 
         public bool IsAllowed<TEntity>(IUser user, TEntity entity, string operation,
@@ -184,13 +192,18 @@ namespace Lokad.Cqrs.Extensions.Permissions
             return permissionsService.GetPermissionsFor(user);
         }
 
+        public void Dispose()
+        {
+            session.Dispose();
+        }
+
         #endregion
 
         private void ClearOperations(Operation operation)
         {
-            var collections = operation.Children.ToArray();
+            Operation[] collections = operation.Children.ToArray();
 
-            foreach (var o in collections)
+            foreach (Operation o in collections)
             {
                 repository.RemoveOperation(o.Name);
             }

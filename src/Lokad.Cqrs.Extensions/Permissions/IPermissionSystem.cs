@@ -30,10 +30,13 @@
 
 #endregion
 
+using System;
+
 namespace Lokad.Cqrs.Extensions.Permissions
 {
-    public interface IPermissionSystem : IPermissionReader, IPermissionWriter
+    public interface IPermissionSystem : IPermissionReader, IPermissionWriter, IDisposable
     {
         void ClearOperations();
+        void Flush();
     }
 }

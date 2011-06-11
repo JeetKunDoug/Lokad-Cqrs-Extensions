@@ -11,10 +11,5 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         {
             return new OrAuthorizationSpecification<T>(@this, specification);
         }
-
-        public static IAuthorizationSpecification<T> Not<T>(this IAuthorizationSpecification<T> @this) where T : class, ISecurableEntity
-        {
-            return new NotAuthorizationSpecification<T>(@this);
-        }
     }
 }

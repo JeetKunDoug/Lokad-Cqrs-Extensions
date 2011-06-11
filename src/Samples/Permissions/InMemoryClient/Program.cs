@@ -35,7 +35,11 @@ using Commands;
 
 using Lokad.Cqrs;
 using Lokad.Cqrs.Extensions.Permissions;
+using Lokad.Cqrs.Extensions.Permissions.Specification;
 using Lokad.Cqrs.Feature.AtomicStorage;
+
+using Rhino.Security;
+using Rhino.Security.Interfaces;
 
 using Security;
 
@@ -47,39 +51,42 @@ namespace InMemoryClient
 {
     internal class Program
     {
+        private readonly PermissionsUser admin;
+        private readonly IPermissionSystem permissions;
+        private readonly ConsoleReader reader;
         private readonly IMessageSender sender;
         private readonly NuclearStorage storage;
-        private readonly IPermissionSystem permissions;
         private readonly CancellationTokenSource token;
-        private readonly ConsoleReader reader;
+        private readonly IAuthorizationRepository authorizationRepository;
         private readonly IEnumerable<PermissionsUser> users;
-        private readonly PermissionsUser admin;
 
-        public Program(IMessageSender sender, NuclearStorage storage, IPermissionSystem permissions, CancellationTokenSource token)
+        public Program(IMessageSender sender, NuclearStorage storage, IPermissionSystem permissions,
+                       CancellationTokenSource token, IAuthorizationRepository authorizationRepository)
         {
             this.sender = new SecuritySenderDecorator(new SenderDecorator(sender));
             this.storage = storage;
             this.permissions = permissions;
             this.token = token;
+            this.authorizationRepository = authorizationRepository;
 
             reader = new ConsoleReader();
 
             admin = new PermissionsUser("Admin", Guid.NewGuid());
 
             users = new List<PermissionsUser>
-            {
-                admin,
-                new PermissionsUser("Chris", Guid.NewGuid()),
-                new PermissionsUser("Scott", Guid.NewGuid()),
-                PermissionsUser.Anonymous
-            };
+                {
+                    admin,
+                    new PermissionsUser("Chris", Guid.NewGuid()),
+                    new PermissionsUser("Scott", Guid.NewGuid()),
+                    PermissionsUser.Anonymous
+                };
 
             InitializePermissions();
         }
 
         private void InitializePermissions()
         {
-            foreach (var user in users)
+            foreach (PermissionsUser user in users)
             {
                 permissions.AddUser(user);
             }
@@ -89,7 +96,7 @@ namespace InMemoryClient
 
         private void RunAs()
         {
-            var user = reader.GetValueOf("Run as", users, u=>u.Name);
+            PermissionsUser user = reader.GetValueOf("Run as", users, u => u.Name);
 
             var identity = new CustomIdentity(user.Name, user.Id);
             Thread.CurrentPrincipal = new CustomPrincipal(identity);
@@ -99,15 +106,16 @@ namespace InMemoryClient
 
         private PermissionsUser GetCurrentUser()
         {
-            var principal = Thread.CurrentPrincipal as CustomPrincipal ??
-                            new CustomPrincipal(new CustomIdentity(PermissionsUser.Anonymous.Name, PermissionsUser.Anonymous.Id));
+            CustomPrincipal principal = Thread.CurrentPrincipal as CustomPrincipal ??
+                                        new CustomPrincipal(new CustomIdentity(PermissionsUser.Anonymous.Name,
+                                                                               PermissionsUser.Anonymous.Id));
 
             return principal.ToPermissionsUser();
         }
 
         private void CreateMessage()
         {
-            var user = GetCurrentUser();
+            PermissionsUser user = GetCurrentUser();
             if (user.Equals(PermissionsUser.Anonymous))
             {
                 Console.Out.WriteLine("Anonymous users can not create messages.");
@@ -116,17 +124,17 @@ namespace InMemoryClient
 
             Guid id = Guid.NewGuid();
             sender.SendOne(new CreateMessage
-            {
-                Id = id,
-                Message = reader.GetString("message")
-            });
+                {
+                    Id = id,
+                    Message = reader.GetString("message")
+                });
         }
 
         private void AddNoteToMessage()
         {
             var index = storage.GetSingletonOrNew<MessageIndex>();
-            var pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
-            var specification = GetCurrentUser().Spec<Note>(pair.Key).BuildFor("add");
+            KeyValuePair<Guid, string> pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
+            IAuthorizationSpecification<Note> specification = GetCurrentUser().Authorization<Note>(pair.Key).For("add");
             if (specification.IsDenied())
             {
                 Console.Out.WriteLine("Error");
@@ -135,20 +143,20 @@ namespace InMemoryClient
                 return;
             }
 
-            sender.SendOne(new AddNote()
-            {
-                MessageId = pair.Key,
-                Note = reader.GetString("note")
-            });
+            sender.SendOne(new AddNote
+                {
+                    MessageId = pair.Key,
+                    Note = reader.GetString("note")
+                });
         }
 
         private void EditMessage()
         {
             var index = storage.GetSingletonOrNew<MessageIndex>();
-            var pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
+            KeyValuePair<Guid, string> pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
 
-            var specification = GetCurrentUser().Edit<Message>(pair.Key);
-            if(specification.IsDenied())
+            IAuthorizationSpecification<Message> specification = GetCurrentUser().Edit<Message>(pair.Key);
+            if (specification.IsDenied())
             {
                 Console.Out.WriteLine("Error");
                 Console.Out.WriteLine(specification.AuthorizationInformation);
@@ -157,19 +165,19 @@ namespace InMemoryClient
             }
 
             sender.SendOne(new EditMessage
-            {
-                Id = pair.Key,
-                Message = reader.GetString("new message"),
-                OldMessage = pair.Value
-            });
+                {
+                    Id = pair.Key,
+                    Message = reader.GetString("new message"),
+                    OldMessage = pair.Value
+                });
         }
 
         private void DeleteMessage()
         {
             var index = storage.GetSingletonOrNew<MessageIndex>();
-            var pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
+            KeyValuePair<Guid, string> pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
 
-            var specification = GetCurrentUser().Delete<Message>(pair.Key);
+            IAuthorizationSpecification<Message> specification = GetCurrentUser().Delete<Message>(pair.Key);
             if (specification.IsDenied())
             {
                 Console.Out.WriteLine("Error");
@@ -178,18 +186,18 @@ namespace InMemoryClient
             }
 
             sender.SendOne(new DeleteMessage
-            {
-                Id = pair.Key
-            });
+                {
+                    Id = pair.Key
+                });
         }
 
         private void ViewMessage()
         {
             var index = storage.GetSingletonOrNew<MessageIndex>();
-            var pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
+            KeyValuePair<Guid, string> pair = reader.GetValueOf("Pick message", index.Messages, p => p.Value);
 
             MessageView view;
-            if(!storage.TryGetEntity(pair.Key, out view))
+            if (!storage.TryGetEntity(pair.Key, out view))
             {
                 Console.Out.WriteLine("Message not found!");
             }
@@ -199,20 +207,21 @@ namespace InMemoryClient
             Console.Out.WriteLine("Last Modified: {0}", view.UtcLastModified);
             Console.Out.WriteLine("Body: {0}", view.Message);
             Console.Out.WriteLine("Notes:");
-            foreach (var note in view.Notes)
+            foreach (string note in view.Notes)
             {
                 Console.Out.WriteLine("\t{0}", note);
             }
         }
-        
+
         public void Run()
         {
+            Guid id = Guid.NewGuid();
+
             do
             {
                 Console.Clear();
                 RunAs();
-                Choose()();
-
+                Choose(id)();
             } while (reader.Confirm("Run more operations?"));
 
             token.Cancel(false);
@@ -223,20 +232,88 @@ namespace InMemoryClient
             }
         }
 
-        private Action Choose()
+        private Action Choose(Guid id)
         {
-            var choice = reader.GetValueOf("Choose operation", new[]
-            {
-                new Tuple<string, Action>("Create message", CreateMessage),
-                new Tuple<string, Action>("View message", ViewMessage),
-                new Tuple<string, Action>("Edit message", EditMessage),
-                new Tuple<string, Action>("Delete message", DeleteMessage),
-                new Tuple<string, Action>("Add Note To Message", AddNoteToMessage)
-
-            }, t => t.Item1);
+            Tuple<string, Action> choice = reader.GetValueOf("Choose operation", new[]
+                {
+                    new Tuple<string, Action>("Create message", CreateMessage),
+                    new Tuple<string, Action>("View message", ViewMessage),
+                    new Tuple<string, Action>("Edit message", EditMessage),
+                    new Tuple<string, Action>("Delete message", DeleteMessage),
+                    new Tuple<string, Action>("Add Note To Message", AddNoteToMessage),
+                    new Tuple<string, Action>("Deny op", ()=>DenyOperation(id)), 
+                    new Tuple<string, Action>("Allow op", ()=>AllowOperation(id)), 
+                    new Tuple<string, Action>("Allow multiple ops", () => AllowMultipleOperations(id)),
+                    new Tuple<string, Action>("Deny multiple ops", () => DenyMultipleOperations(id)),
+                    new Tuple<string, Action>("Allow, deny, and check", () => AllowDenyAndCheck(id))
+                    
+                }, t => t.Item1);
 
             return choice.Item2;
         }
 
+        private void AllowDenyAndCheck(Guid id)
+        {
+            PermissionsUser user = GetCurrentUser();
+
+            var deleteSpec = user.Authorization<Note>(id).For("delete");
+            var editSpec = user.Authorization<Note>(id).For("edit");
+            var addSpec = user.Authorization<Note>(id).For("add");
+
+            var orSpecification = addSpec.Or(deleteSpec);
+            var andSpecification = addSpec.And(deleteSpec);
+
+            orSpecification.Allow();
+            
+            Console.Out.WriteLine("");
+            Console.Out.WriteLine("delete is denied: {0}", orSpecification.IsDenied());
+            Console.Out.WriteLine(deleteSpec.AuthorizationInformation);
+            Console.Out.WriteLine("");
+            Console.Out.WriteLine("add is denied: {0}", andSpecification.IsDenied());
+            Console.Out.WriteLine(addSpec.AuthorizationInformation);
+        }
+
+        private void AllowMultipleOperations(Guid id)
+        {
+            PermissionsUser user = GetCurrentUser();
+
+
+            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For("add", "delete", "create",
+                                                                                               "view", "do", "edit");
+
+            specification.Allow();
+        }
+
+        private void DenyOperation(Guid id)
+        {
+            PermissionsUser user = GetCurrentUser();
+            var op = reader.GetValueOf("operation", new[]{"add", "delete", "create",
+                                                               "view", "do", "edit"}, s=>s);
+            
+            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For(op);
+            
+            specification.Deny();
+        }
+
+        private void AllowOperation(Guid id)
+        {
+            PermissionsUser user = GetCurrentUser();
+            var op = reader.GetValueOf("operation", new[]{"add", "delete", "create",
+                                                               "view", "do", "edit"}, s => s);
+
+            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For(op);
+
+            specification.Allow();
+        }
+
+        private void DenyMultipleOperations(Guid id)
+        {
+            PermissionsUser user = GetCurrentUser();
+
+            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For("add", "delete", "create",
+                                                                                               "view", "do", "edit");
+
+            specification.Deny();
+        }
     }
 }

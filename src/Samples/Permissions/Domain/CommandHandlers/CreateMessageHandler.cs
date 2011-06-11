@@ -32,8 +32,8 @@ namespace Domain.CommandHandlers
 
             Authorize(user);
             
-            user.TakeOwnership<Message>(message.Id);
-            user.Spec<Note>(message.Id).Build().Allow();
+            user.TakeOwnershipOf<Message>(message.Id);
+            user.Authorization<Note>(message.Id).ForRoot().Allow();
 
             sender.SendOne(new MessageCreated
             {
@@ -47,7 +47,7 @@ namespace Domain.CommandHandlers
 
         private void Authorize(PermissionsUser user)
         {
-            if(user.Equals(PermissionsUser.Anonymous))
+            if(user.IsAnonymous())
             {
                 throw new Exception("Anonymous users can not create messages.");
             }

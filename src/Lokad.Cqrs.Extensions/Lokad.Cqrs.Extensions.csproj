@@ -114,16 +114,17 @@
     <Compile Include="Permissions\IPermissionWriter.cs" />
     <Compile Include="Permissions\IProvideOperations.cs" />
     <Compile Include="Permissions\ISecurableEntity.cs" />
+    <Compile Include="Permissions\PermissionException.cs" />
     <Compile Include="Permissions\PermissionsUser.cs" />
     <Compile Include="Permissions\PermissionSystem.cs" />
     <Compile Include="Permissions\Specification\AndAuthorizationSpecification.cs" />
     <Compile Include="Permissions\Specification\AuthorizationSpecification.cs" />
-    <Compile Include="Permissions\Specification\AuthorizationSpecificationBuilder.cs" />
+    <Compile Include="Permissions\Specification\AuthorizationBuilder.cs" />
     <Compile Include="Permissions\Specification\CompositeAuthorizationSpecification.cs" />
     <Compile Include="Permissions\Specification\ExtendIAuthorizationSpecification.cs" />
     <Compile Include="Permissions\Specification\IAuthorizationSpecification.cs" />
-    <Compile Include="Permissions\Specification\IAuthorizationSpecificationBuilder.cs" />
-    <Compile Include="Permissions\Specification\NotAuthorizationSpecification.cs" />
+    <Compile Include="Permissions\Specification\IAuthorizationBuilder.cs" />
+    <Compile Include="Permissions\Specification\NullAuthorizationSpecification.cs" />
     <Compile Include="Permissions\Specification\OrAuthorizationSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
