@@ -38,7 +38,6 @@ using Lokad.Cqrs.Extensions.Permissions;
 using Lokad.Cqrs.Extensions.Permissions.Specification;
 using Lokad.Cqrs.Feature.AtomicStorage;
 
-using Rhino.Security;
 using Rhino.Security.Interfaces;
 
 using Security;
@@ -52,7 +51,6 @@ namespace InMemoryClient
     internal class Program
     {
         private readonly PermissionsUser admin;
-        private readonly IPermissionSystem permissions;
         private readonly ConsoleReader reader;
         private readonly IMessageSender sender;
         private readonly NuclearStorage storage;
@@ -60,12 +58,10 @@ namespace InMemoryClient
         private readonly IAuthorizationRepository authorizationRepository;
         private readonly IEnumerable<PermissionsUser> users;
 
-        public Program(IMessageSender sender, NuclearStorage storage, IPermissionSystem permissions,
-                       CancellationTokenSource token, IAuthorizationRepository authorizationRepository)
+        public Program(IMessageSender sender, NuclearStorage storage, CancellationTokenSource token, IAuthorizationRepository authorizationRepository)
         {
             this.sender = new SecuritySenderDecorator(new SenderDecorator(sender));
             this.storage = storage;
-            this.permissions = permissions;
             this.token = token;
             this.authorizationRepository = authorizationRepository;
 
@@ -88,10 +84,10 @@ namespace InMemoryClient
         {
             foreach (PermissionsUser user in users)
             {
-                permissions.AddUser(user);
+                user.Save();
             }
 
-            permissions.Allow("/message", p => p.For(admin).OnEverything().DefaultLevel().Save());
+            admin.Permission().ForEntity<Message>().OnRootOperation().Allow();
         }
 
         private void RunAs()
@@ -256,20 +252,21 @@ namespace InMemoryClient
         {
             PermissionsUser user = GetCurrentUser();
 
+            var builder = user.Permission().ForEntity<Note>(id);
+            builder.OnOperation("add").Allow();
+            builder.OnOperation("delete").Deny();
+
             var deleteSpec = user.Authorization<Note>(id).For("delete");
-            var editSpec = user.Authorization<Note>(id).For("edit");
             var addSpec = user.Authorization<Note>(id).For("add");
 
             var orSpecification = addSpec.Or(deleteSpec);
             var andSpecification = addSpec.And(deleteSpec);
-
-            orSpecification.Allow();
             
             Console.Out.WriteLine("");
-            Console.Out.WriteLine("delete is denied: {0}", orSpecification.IsDenied());
+            Console.Out.WriteLine("orSpecification is allowed: {0}", orSpecification.IsAllowed());
             Console.Out.WriteLine(deleteSpec.AuthorizationInformation);
             Console.Out.WriteLine("");
-            Console.Out.WriteLine("add is denied: {0}", andSpecification.IsDenied());
+            Console.Out.WriteLine("andSpecification is allowed: {0}", andSpecification.IsAllowed());
             Console.Out.WriteLine(addSpec.AuthorizationInformation);
         }
 
@@ -277,22 +274,26 @@ namespace InMemoryClient
         {
             PermissionsUser user = GetCurrentUser();
 
+            var builder = user.Permission().ForEntity<Note>(id);
 
-            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For("add", "delete", "create",
-                                                                                               "view", "do", "edit");
-
-            specification.Allow();
+            builder.OnOperation("add").Allow();
+            builder.OnOperation("delete").Allow();
+            builder.OnOperation("create").Allow();
+            builder.OnOperation("view").Allow();
+            builder.OnOperation("do").Allow();
+            builder.OnOperation("edit").Allow();
         }
 
         private void DenyOperation(Guid id)
         {
             PermissionsUser user = GetCurrentUser();
             var op = reader.GetValueOf("operation", new[]{"add", "delete", "create",
-                                                               "view", "do", "edit"}, s=>s);
-            
-            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For(op);
-            
-            specification.Deny();
+                                                               "view", "do", "edit"}, s => s);
+
+
+            var builder = user.Permission().ForEntity<Note>(id);
+
+            builder.OnOperation(op).Deny();
         }
 
         private void AllowOperation(Guid id)
@@ -301,19 +302,24 @@ namespace InMemoryClient
             var op = reader.GetValueOf("operation", new[]{"add", "delete", "create",
                                                                "view", "do", "edit"}, s => s);
 
-            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For(op);
 
-            specification.Allow();
+            var builder = user.Permission().ForEntity<Note>(id);
+
+            builder.OnOperation(op).Allow();
         }
 
         private void DenyMultipleOperations(Guid id)
         {
             PermissionsUser user = GetCurrentUser();
 
-            IAuthorizationSpecification<Note> specification = user.Authorization<Note>(id).For("add", "delete", "create",
-                                                                                               "view", "do", "edit");
+            var builder = user.Permission().ForEntity<Note>(id);
 
-            specification.Deny();
+            builder.OnOperation("add").Deny();
+            builder.OnOperation("delete").Deny();
+            builder.OnOperation("create").Deny();
+            builder.OnOperation("view").Deny();
+            builder.OnOperation("do").Deny();
+            builder.OnOperation("edit").Deny();
         }
     }
 }

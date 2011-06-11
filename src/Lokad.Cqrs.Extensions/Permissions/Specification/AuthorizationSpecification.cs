@@ -5,16 +5,13 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
     class AuthorizationSpecification<T> : IAuthorizationSpecification<T> where T : class, ISecurableEntity
     {
         private readonly string operation;
-        private readonly IPermissionsBuilderService permissionsBuilder;
         private readonly IAuthorizationService authorizationService;
         private readonly T entity;
         private readonly PermissionsUser user;
 
-        public AuthorizationSpecification(IPermissionsBuilderService permissionsBuilder, 
-            IAuthorizationService authorizationService, T entity, PermissionsUser user, string operation)
+        public AuthorizationSpecification(IAuthorizationService authorizationService, T entity, PermissionsUser user, string operation)
         {
             this.operation = operation;
-            this.permissionsBuilder = permissionsBuilder;
             this.authorizationService = authorizationService;
             this.entity = entity;
             this.user = user;
@@ -37,16 +34,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             get { return authorizationService.GetAuthorizationInformation(user, entity, operation).ToString(); }
         }
         
-        public void Allow()
-        {
-            permissionsBuilder.Allow(operation).For(user).On(entity).Level(20).Save();
-        }
-
-        public void Deny()
-        {
-            permissionsBuilder.Deny(operation).For(user).On(entity).DefaultLevel().Save();
-        }
-
         #endregion
     }
 }

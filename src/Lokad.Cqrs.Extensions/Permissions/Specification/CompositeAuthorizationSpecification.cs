@@ -6,50 +6,39 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
     {
         private readonly IAuthorizationSpecification<T> left;
         private readonly IAuthorizationSpecification<T> right;
-        private readonly AuthorizationInformation information;
 
         protected CompositeAuthorizationSpecification(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
         {
             this.left = left;
             this.right = right;
-            information = new AuthorizationInformation();
         }
 
         #region Implementation of IAuthorizationSpecification<T>
 
         public bool IsDenied()
         {
-            var result = IsDeniedFor(left, right);
-            information.AddAllow(left.AuthorizationInformation);
-            information.AddAllow(right.AuthorizationInformation);
-            return result;
+            return !IsAllowed();
         }
 
         public bool IsAllowed()
         {
-            return !IsDenied();
+            return IsAllowed(left, right);
         }
 
         public string AuthorizationInformation
         {
-            get { return information.ToString(); }
-        }
-
-        public void Allow()
-        {
-            left.Allow();
-            right.Allow();
-        }
-
-        public void Deny()
-        {
-            left.Deny();
-            right.Deny();
+            get
+            {
+                var information = new AuthorizationInformation();
+                information.AddAllow(left.AuthorizationInformation);
+                information.AddAllow(right.AuthorizationInformation);
+                return information.ToString();
+            }
         }
 
         #endregion
 
-        protected abstract bool IsDeniedFor(IAuthorizationSpecification<T> left,
+        protected abstract bool IsAllowed(IAuthorizationSpecification<T> left,
                                             IAuthorizationSpecification<T> right);
     }
 }

@@ -19,6 +19,9 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             entity = new T { SecurityKey = this.id };
         }
 
+        public AuthorizationBuilder(PermissionsUser user) : this(user, Guid.Empty)
+        {}
+
         public IAuthorizationSpecification<T> For(string action)
         {
             return CreateSpecification(GetOperation(action));
@@ -51,9 +54,8 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         private IAuthorizationSpecification<T> CreateSpecification(string operation)
         {
             var authorizationService = Resolve<IAuthorizationService>();
-            var builderService = Resolve<IPermissionsBuilderService>();
 
-            return new AuthorizationSpecification<T>(builderService, authorizationService, entity, user, operation);
+            return new AuthorizationSpecification<T>(authorizationService, entity, user, operation);
         }
 
         public string RootOperation

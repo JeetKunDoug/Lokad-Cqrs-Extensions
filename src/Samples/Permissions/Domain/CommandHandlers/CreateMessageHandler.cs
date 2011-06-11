@@ -33,7 +33,7 @@ namespace Domain.CommandHandlers
             Authorize(user);
             
             user.TakeOwnershipOf<Message>(message.Id);
-            user.Authorization<Note>(message.Id).ForRoot().Allow();
+            user.Permission().ForEntity<Note>(message.Id).OnRootOperation().Allow();
 
             sender.SendOne(new MessageCreated
             {

@@ -4,6 +4,8 @@ using Lokad.Cqrs.Extensions.Permissions.Specification;
 
 using Microsoft.Practices.ServiceLocation;
 
+using NHibernate;
+
 namespace Lokad.Cqrs.Extensions.Permissions
 {
     public static class ExtendPermissionUser
@@ -12,10 +14,20 @@ namespace Lokad.Cqrs.Extensions.Permissions
         {
             return new AuthorizationBuilder<T>(user, id);
         }
+        
+        public static IAuthorizationBuilder<T> Authorization<T>(this PermissionsUser user) where T : class, ISecurableEntity, new()
+        {
+            return new AuthorizationBuilder<T>(user);
+        }
 
         public static IAuthorizationSpecification<T> Edit<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
             return Authorization<T>(user, id).For("edit");
+        }
+
+        public static IAuthorizationSpecification<T> Edit<T>(this PermissionsUser user) where T : class, ISecurableEntity, new()
+        {
+            return Authorization<T>(user).For("edit");
         }
 
         public static IAuthorizationSpecification<T> Delete<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
@@ -25,11 +37,7 @@ namespace Lokad.Cqrs.Extensions.Permissions
 
         public static void TakeOwnershipOf<T>(this PermissionsUser user, Guid id) where T : class, ISecurableEntity, new()
         {
-            var builder = new AuthorizationBuilder<T>(user, id);
-            var specification = builder.ForRoot();
-            var writer = ServiceLocator.Current.GetInstance<IPermissionWriter>();
-            writer.Allow(builder.RootOperation, p=>p.For(user)
-                .On(builder.Entity));
+            user.Permission().ForEntity<T>(id).OnRootOperation().Allow();
         }
 
         public static bool IsAnonymous(this PermissionsUser user)
@@ -40,6 +48,18 @@ namespace Lokad.Cqrs.Extensions.Permissions
         public static bool NotAnonymous(this PermissionsUser user)
         {
             return !IsAnonymous(user);
+        }
+
+        public static void Save(this PermissionsUser user)
+        {
+            var session = ServiceLocator.Current.GetInstance<ISession>();
+            session.Save(user);
+            session.Flush();
+        }
+
+        public static PermissionBuilder Permission(this PermissionsUser user)
+        {
+            return new PermissionBuilder(user);
         }
     }
 }

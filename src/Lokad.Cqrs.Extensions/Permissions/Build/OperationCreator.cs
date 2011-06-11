@@ -2,28 +2,36 @@ using System.Linq;
 
 using Autofac;
 
+using NHibernate;
+
+using Rhino.Security.Interfaces;
+using Rhino.Security.Model;
+
 namespace Lokad.Cqrs.Extensions.Permissions.Build
 {
     public class OperationCreator : IStartable
     {
         private readonly IProvideOperations provider;
-        private readonly IPermissionWriter writer;
+        private readonly ISession session;
+        private readonly IAuthorizationRepository repository;
 
-        public OperationCreator(IProvideOperations provider, IPermissionWriter writer)
+        public OperationCreator(IProvideOperations provider, ISession session, IAuthorizationRepository repository)
         {
             this.provider = provider;
-            this.writer = writer;
+            this.session = session;
+            this.repository = repository;
         }
 
         #region Implementation of IStartable
 
         public void Start()
         {
-            var existingOperations = writer.GetOperations().Select(o => o.Name).ToArray();
+            var existingOperations = session.QueryOver<Operation>().List().ToArray();
 
             foreach (var operation in provider.GetOperations().Where(operation => !existingOperations.Any(s => s.Equals(operation))))
             {
-                writer.CreateOperation(operation);
+                repository.CreateOperation(operation);
+                session.Flush();
             }
         }
 

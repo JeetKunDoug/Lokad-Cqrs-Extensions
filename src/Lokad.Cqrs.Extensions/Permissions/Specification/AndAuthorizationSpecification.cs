@@ -9,9 +9,9 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
 
         #region Overrides of CompositeAuthorizationSpecification<T>
 
-        protected override bool IsDeniedFor(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
+        protected override bool IsAllowed(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
         {
-            return left.IsDenied() && right.IsDenied();
+            return left.IsAllowed() && right.IsAllowed();
         }
 
         #endregion

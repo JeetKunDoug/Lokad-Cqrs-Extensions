@@ -103,9 +103,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
             builder.Register(OpenSession).InstancePerLifetimeScope()
                 .As<ISession>();
 
-            builder.RegisterType<PermissionSystem>().InstancePerLifetimeScope()
-                .As<IPermissionSystem, IPermissionReader, IPermissionWriter>();
-
             builder.RegisterType<ServiceLocatorSetter>()
                 .SingleInstance()
                 .As<IStartable>();

@@ -16,11 +16,5 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         {
             get { return string.Empty; }
         }
-
-        public void Allow()
-        {}
-
-        public void Deny()
-        {}
     }
 }
