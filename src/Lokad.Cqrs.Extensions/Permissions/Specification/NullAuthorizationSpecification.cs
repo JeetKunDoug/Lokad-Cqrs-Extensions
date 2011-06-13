@@ -16,5 +16,8 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         {
             get { return string.Empty; }
         }
+
+        public void Assert()
+        {}
     }
 }

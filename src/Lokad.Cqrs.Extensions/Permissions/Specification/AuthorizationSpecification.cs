@@ -33,7 +33,13 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         {
             get { return authorizationService.GetAuthorizationInformation(user, entity, operation).ToString(); }
         }
-        
+
+        public void Assert()
+        {
+            if(IsDenied())
+                throw new PermissionException(AuthorizationInformation);
+        }
+
         #endregion
     }
 }

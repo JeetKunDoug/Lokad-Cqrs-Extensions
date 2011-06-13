@@ -36,6 +36,12 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             }
         }
 
+        public void Assert()
+        {
+            if (IsDenied())
+                throw new PermissionException(AuthorizationInformation);
+        }
+
         #endregion
 
         protected abstract bool IsAllowed(IAuthorizationSpecification<T> left,

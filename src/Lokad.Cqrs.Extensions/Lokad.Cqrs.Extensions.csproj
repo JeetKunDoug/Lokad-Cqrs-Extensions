@@ -109,8 +109,8 @@
     <Compile Include="Permissions\DisposableAction.cs" />
     <Compile Include="Permissions\EntityInformationExtractor.cs" />
     <Compile Include="Permissions\EntityPermission.cs" />
-    <Compile Include="Permissions\ExtendIOnPermissionBuilder.cs" />
-    <Compile Include="Permissions\ExtendPermissionUser.cs" />
+    <Compile Include="Permissions\Extensions\ExtendIOnPermissionBuilder.cs" />
+    <Compile Include="Permissions\Extensions\ExtendPermissionUser.cs" />
     <Compile Include="Permissions\IEntityPermission.cs" />
     <Compile Include="Permissions\IOperationBuilder.cs" />
     <Compile Include="Permissions\IProvideOperations.cs" />

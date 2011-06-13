@@ -6,7 +6,7 @@ using Microsoft.Practices.ServiceLocation;
 
 using NHibernate;
 
-namespace Lokad.Cqrs.Extensions.Permissions
+namespace Lokad.Cqrs.Extensions.Permissions.Extensions
 {
     public static class ExtendPermissionUser
     {

@@ -2,7 +2,7 @@ using System;
 
 using Rhino.Security.Interfaces;
 
-namespace Lokad.Cqrs.Extensions.Permissions
+namespace Lokad.Cqrs.Extensions.Permissions.Extensions
 {
     internal static class ExtendIOnPermissionBuilder
     {

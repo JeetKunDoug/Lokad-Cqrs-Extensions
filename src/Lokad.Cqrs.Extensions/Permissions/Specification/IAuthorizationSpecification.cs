@@ -5,5 +5,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         bool IsDenied();
         bool IsAllowed();
         string AuthorizationInformation { get; }
+        void Assert();
     }
 }

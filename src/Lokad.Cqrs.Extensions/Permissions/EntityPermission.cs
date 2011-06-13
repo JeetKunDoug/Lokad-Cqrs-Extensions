@@ -1,5 +1,7 @@
 using System;
 
+using Lokad.Cqrs.Extensions.Permissions.Extensions;
+
 using Microsoft.Practices.ServiceLocation;
 
 using NHibernate;
@@ -11,16 +13,14 @@ namespace Lokad.Cqrs.Extensions.Permissions
     class EntityPermission<T> : IEntityPermission, IOperationBuilder where T : class, ISecurableEntity, new()
     {
         private readonly PermissionsUser user;
-        private Guid entityId;
         private readonly T entity;
         private readonly IPermissionsBuilderService permissionsBuilder;
-        private string activeOperation = null;
+        private string activeOperation;
 
 
         public EntityPermission(PermissionsUser user, Guid entityId)
         {
             this.user = user;
-            this.entityId = entityId;
             entity = new T{SecurityKey = entityId};
             permissionsBuilder = ServiceLocator.Current.GetInstance<IPermissionsBuilderService>();
         }
