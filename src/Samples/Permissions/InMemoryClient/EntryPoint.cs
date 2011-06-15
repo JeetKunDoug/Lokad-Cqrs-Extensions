@@ -11,7 +11,7 @@ using Context;
 
 using Domain.CommandHandlers;
 
-using Lokad.Cqrs.Build;
+using Lokad.Cqrs;
 using Lokad.Cqrs.Build.Engine;
 using Lokad.Cqrs.Extensions;
 using Lokad.Cqrs.Extensions.Permissions;
@@ -62,7 +62,7 @@ namespace InMemoryClient
                     s.NameForSingleton(type => DefaultAtomicStorageStrategyBuilder.CleanName(type.Name) + ".json");
                     s.NameForEntity((type, key) => (DefaultAtomicStorageStrategyBuilder.CleanName(type.Name) + "-" + Convert.ToString(key, CultureInfo.InvariantCulture).ToLowerInvariant()) + ".json");
                     s.WithAssemblyOf<MessageView>();
-                    s.CustomStaticSerializer(new AtomicStorageSerializerWithJson());
+                    s.CustomSerializer(new AtomicStorageSerializerWithJson());
                 });
                 config.StreamingIsInFiles(folder);
             });
@@ -70,14 +70,20 @@ namespace InMemoryClient
             //NOTE: Permissions Initialization
             builder.Permissions(config =>
             {
-                const string CONNECTION_STRING = @"Data Source=.\;Initial Catalog=lokad-cqrs-permissions;Integrated Security=True;Pooling=False";
+                const string CONNECTION_STRING = @"Data Source=.\sqlexpress;Initial Catalog=lokad-cqrs-permissions;Integrated Security=True;Pooling=False";
 
                 config.InitializeDatabase();
 
                 config.InformationExtractors(info => info.EntitiesAreInAssemblyOf<Message>());
                 config.Persistance<SqlClientDriver, MsSql2008Dialect>(CONNECTION_STRING);
-                config.Operations<OperationProvider>();
                 config.UserIs<PermissionsUser>();
+            });
+
+            //NOTE: Customization
+            builder.Advanced.ConfigureContainer(b=>
+            {
+                b.RegisterType<OperationProvider>().SingleInstance().As<IProvideOperations>();
+                b.RegisterType<OperationCreator>().SingleInstance().As<IStartable>();
             });
 
             return builder;

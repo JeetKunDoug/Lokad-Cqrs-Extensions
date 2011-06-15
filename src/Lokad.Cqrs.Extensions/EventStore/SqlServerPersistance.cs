@@ -27,10 +27,31 @@
 
 #endregion
 
-namespace Lokad.Cqrs.Extensions.EventStore.Build
+using System.Data.Common;
+
+namespace Lokad.Cqrs.Extensions.EventStore
 {
-    public interface IPersistanceConfiguration
+    public class SqlServerPersistance : IPersistanceConfiguration
     {
-        IPipelineConfiguration ConnectionString(string connectionString);
+        public SqlServerPersistance(string connectionString)
+        {
+            ConnectionString = connectionString;
+        }
+
+        #region Implementation of IPersistanceConfiguration
+
+        public string ConnectionString { get; private set; }
+
+        public string ProviderName
+        {
+            get { return "System.Data.SqlClient"; }
+        }
+
+        public DbProviderFactory Factory
+        {
+            get { return DbProviderFactories.GetFactory(ProviderName); }
+        }
+
+        #endregion
     }
 }

@@ -82,7 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AtomicStorageSerializerWithJson.cs" />
-    <Compile Include="EventStore\Build\IPersistanceConfiguration.cs" />
     <Compile Include="EventStore\Build\IPipelineConfiguration.cs" />
     <Compile Include="EventStore\Build\ISnapshottingConfiguration.cs" />
     <Compile Include="EventStore\Build\PipelineModule.cs" />
@@ -91,6 +90,7 @@
     <Compile Include="EventStore\Events\PostCommit.cs" />
     <Compile Include="EventStore\Events\PreCommit.cs" />
     <Compile Include="EventStore\Events\SnapshotTaken.cs" />
+    <Compile Include="EventStore\IPersistanceConfiguration.cs" />
     <Compile Include="EventStore\PipelineHookSystemObserver.cs" />
     <Compile Include="EventStore\SnapshottingProcess.cs" />
     <Compile Include="EventStore\Build\AggregateFactory.cs" />
@@ -98,12 +98,12 @@
     <Compile Include="EventStore\Build\EventStoreModule.cs" />
     <Compile Include="EventStore\Build\ExtendWireup.cs" />
     <Compile Include="EventStore\Build\ExtendCqrsEngineBuilder.cs" />
+    <Compile Include="EventStore\SqlServerPersistance.cs" />
     <Compile Include="Permissions\AutofacServiceLocator.cs" />
     <Compile Include="Permissions\Build\ExtendCqrsClientBuilder.cs" />
     <Compile Include="Permissions\Build\ExtendCqrsEngineBuilder.cs" />
     <Compile Include="Permissions\Build\Filter.cs" />
     <Compile Include="Permissions\Build\InformationExtractorModule.cs" />
-    <Compile Include="Permissions\Build\OperationCreator.cs" />
     <Compile Include="Permissions\Build\PermissionsModule.cs" />
     <Compile Include="Permissions\Build\ServiceLocatorSetter.cs" />
     <Compile Include="Permissions\DisposableAction.cs" />
@@ -115,6 +115,7 @@
     <Compile Include="Permissions\IOperationBuilder.cs" />
     <Compile Include="Permissions\IProvideOperations.cs" />
     <Compile Include="Permissions\ISecurableEntity.cs" />
+    <Compile Include="Permissions\OperationCreator.cs" />
     <Compile Include="Permissions\PermissionBuilder.cs" />
     <Compile Include="Permissions\PermissionException.cs" />
     <Compile Include="Permissions\PermissionsUser.cs" />

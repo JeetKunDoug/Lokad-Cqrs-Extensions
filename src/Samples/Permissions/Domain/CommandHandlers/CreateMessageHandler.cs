@@ -8,6 +8,7 @@ using Domain.Events;
 
 using Lokad.Cqrs;
 using Lokad.Cqrs.Extensions.Permissions;
+using Lokad.Cqrs.Extensions.Permissions.Extensions;
 
 using Security;
 

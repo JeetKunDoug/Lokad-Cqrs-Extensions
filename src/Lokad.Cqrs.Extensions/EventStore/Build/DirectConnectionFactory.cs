@@ -39,19 +39,19 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
     internal class DirectConnectionFactory : ConfigurationConnectionFactory
     {
         private readonly string connectionName;
-        private readonly string connectionString;
+        private readonly IPersistanceConfiguration configuration;
 
-        public DirectConnectionFactory(string connectionName, string connectionString)
+        public DirectConnectionFactory(string connectionName, IPersistanceConfiguration configuration)
             : base(connectionName)
         {
             this.connectionName = connectionName;
-            this.connectionString = connectionString;
+            this.configuration = configuration;
         }
 
         protected override IDbConnection Open(Guid streamId, string connectionName)
         {
             var setting = Settings;
-            var factory = DbProviderFactories.GetFactory(setting.ProviderName);
+            DbProviderFactory factory = configuration.Factory;
             var connection = factory.CreateConnection();
             connection.ConnectionString = BuildConnectionString(streamId, setting);
             connection.Open();
@@ -64,9 +64,9 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
             {
                 var settings = new ConnectionStringSettings
                 {
-                    ProviderName = "System.Data.SqlClient",
+                    ProviderName = configuration.ProviderName,
                     Name = connectionName,
-                    ConnectionString = connectionString
+                    ConnectionString = configuration.ConnectionString
                 };
 
                 return settings;

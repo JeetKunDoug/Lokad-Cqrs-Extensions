@@ -88,7 +88,9 @@ namespace Lokad.Cqrs.Extensions.EventStore
             {
                 while (!token.IsCancellationRequested)
                 {
-                    CreateSnapshots(eventStore.GetStreamsToSnapshot(threshold).ToArray());
+                    IPersistStreams streams = eventStore.Advanced;
+
+                    CreateSnapshots(streams.GetStreamsToSnapshot(threshold).ToArray());
 
                     token.WaitHandle.WaitOne(checkInterval);
                 }
@@ -120,7 +122,7 @@ namespace Lokad.Cqrs.Extensions.EventStore
 
             var snapshot = new Snapshot(head.StreamId, head.HeadRevision, memento);
 
-            eventStore.AddSnapshot(snapshot);
+            eventStore.Advanced.AddSnapshot(snapshot);
 
             observer.Notify(new SnapshotTaken(head.StreamId, head.HeadRevision));
         }

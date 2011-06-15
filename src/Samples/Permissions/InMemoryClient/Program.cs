@@ -35,6 +35,7 @@ using Commands;
 
 using Lokad.Cqrs;
 using Lokad.Cqrs.Extensions.Permissions;
+using Lokad.Cqrs.Extensions.Permissions.Extensions;
 using Lokad.Cqrs.Extensions.Permissions.Specification;
 using Lokad.Cqrs.Feature.AtomicStorage;
 
@@ -55,37 +56,25 @@ namespace InMemoryClient
         private readonly IMessageSender sender;
         private readonly NuclearStorage storage;
         private readonly CancellationTokenSource token;
-        private readonly IAuthorizationRepository authorizationRepository;
         private readonly IEnumerable<PermissionsUser> users;
 
-        public Program(IMessageSender sender, NuclearStorage storage, CancellationTokenSource token, IAuthorizationRepository authorizationRepository)
+        public Program(IMessageSender sender, NuclearStorage storage, CancellationTokenSource token)
         {
             this.sender = new SecuritySenderDecorator(new SenderDecorator(sender));
             this.storage = storage;
             this.token = token;
-            this.authorizationRepository = authorizationRepository;
 
             reader = new ConsoleReader();
 
-            admin = new PermissionsUser("Admin", Guid.NewGuid());
+            admin = new PermissionsUser("Admin", Guid.NewGuid()).Save();
 
             users = new List<PermissionsUser>
                 {
                     admin,
-                    new PermissionsUser("Chris", Guid.NewGuid()),
-                    new PermissionsUser("Scott", Guid.NewGuid()),
+                    new PermissionsUser("Chris", Guid.NewGuid()).Save(),
+                    new PermissionsUser("Scott", Guid.NewGuid()).Save(),
                     PermissionsUser.Anonymous
                 };
-
-            InitializePermissions();
-        }
-
-        private void InitializePermissions()
-        {
-            foreach (PermissionsUser user in users)
-            {
-                user.Save();
-            }
 
             admin.Permission().ForEntity<Message>().OnRootOperation().Allow();
         }

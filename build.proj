@@ -20,7 +20,7 @@
   <Target Name="CleanUp">
     <Message Text="**CLEANUP**" />
     <ItemGroup>
-      <Files Include="$(Artifacts)\*.*"  />
+      <Files Include="$(Artifacts)\*.*" Exclude="$(Artifacts)\Autofac.*;$(Artifacts)\Lokad.Cqrs.Azure.*;$(Artifacts)\Lokad.Cqrs.Portable.*;$(Artifacts)\protobuf-net.*"  />
     </ItemGroup>
     <MakeDir ContinueOnError="true" Directories="$(Publish)" />
     <Copy SourceFiles="@(Files)" DestinationFolder="$(Publish)"  />

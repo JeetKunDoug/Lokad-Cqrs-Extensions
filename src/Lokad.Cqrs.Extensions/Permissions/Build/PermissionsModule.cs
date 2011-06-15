@@ -57,7 +57,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
         protected string DataConnectionString = ".";
         protected Type DataDialect;
         protected Type DataDriver;
-        private Type operationProvider;
         private bool initDb;
 
         public PermissionsModule()
@@ -73,13 +72,8 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
 
         #region IModule Members
 
-        void IModule.Configure(IComponentRegistry componentRegistry)
+        public virtual void Configure(IComponentRegistry componentRegistry)
         {
-            if (operationProvider == null)
-                throw new Exception("You must provide some operations. Have you called config.Operations()?");
-
-            builder.RegisterType(operationProvider).SingleInstance().As<IProvideOperations>();
-
             builder.RegisterType<AuthorizationService>()
                 .InstancePerLifetimeScope()
                 .As<IAuthorizationService>();
@@ -104,10 +98,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
                 .As<ISession>();
 
             builder.RegisterType<ServiceLocatorSetter>()
-                .SingleInstance()
-                .As<IStartable>();
-
-            builder.RegisterType<OperationCreator>()
                 .SingleInstance()
                 .As<IStartable>();
             
@@ -145,12 +135,6 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
                 config.AddAssembly(typeof (T).Assembly);
                 Security.Configure<T>(config, SecurityTableStructure.Prefix);
             };
-            return this;
-        }
-
-        public PermissionsModule Operations<T>() where T: IProvideOperations
-        {
-            operationProvider = typeof (T);
             return this;
         }
 

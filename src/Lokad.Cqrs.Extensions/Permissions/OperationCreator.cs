@@ -7,7 +7,7 @@ using NHibernate;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Model;
 
-namespace Lokad.Cqrs.Extensions.Permissions.Build
+namespace Lokad.Cqrs.Extensions.Permissions
 {
     public class OperationCreator : IStartable
     {
@@ -28,7 +28,7 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
         {
             var existingOperations = session.QueryOver<Operation>().List().ToArray();
 
-            foreach (var operation in provider.GetOperations().Where(operation => !existingOperations.Any(s => s.Equals(operation))))
+            foreach (var operation in provider.GetOperations().Where(operation => !existingOperations.Any(s => s.Name.Equals(operation))))
             {
                 repository.CreateOperation(operation);
                 session.Flush();

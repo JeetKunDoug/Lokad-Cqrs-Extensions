@@ -50,11 +50,12 @@ namespace Lokad.Cqrs.Extensions.Permissions.Extensions
             return !IsAnonymous(user);
         }
 
-        public static void Save(this PermissionsUser user)
+        public static PermissionsUser Save(this PermissionsUser user)
         {
             var session = ServiceLocator.Current.GetInstance<ISession>();
             session.Save(user);
             session.Flush();
+            return user;
         }
 
         public static PermissionBuilder Permission(this PermissionsUser user)

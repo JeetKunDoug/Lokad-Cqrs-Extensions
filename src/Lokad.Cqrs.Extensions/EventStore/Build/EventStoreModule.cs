@@ -46,18 +46,18 @@ using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs.Extensions.EventStore.Build
 {
-    public class EventStoreModule : HideObjectMembersFromIntelliSense, IModule, IPersistanceConfiguration,
+    public class EventStoreModule : HideObjectMembersFromIntelliSense, IModule,
                                     IPipelineConfiguration, ISnapshottingConfiguration
     {
         private readonly ContainerBuilder builder = new ContainerBuilder();
         private IConstructAggregates aggregateConstructor = AggregateFactory.Default;
-        private string eventStoreConnectionString = "";
+        private IPersistanceConfiguration configuration;
 
         #region IPersistanceConfiguration Members
 
-        public IPipelineConfiguration ConnectionString(string connectionString)
+        public EventStoreModule Peristance(IPersistanceConfiguration persistance)
         {
-            eventStoreConnectionString = connectionString;
+            configuration = persistance;
             return this;
         }
 
@@ -71,9 +71,14 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
         void IModule.Configure(IComponentRegistry componentRegistry)
         {
+            if(configuration == null)
+            {
+                throw new Exception("EventStore: You must set a peristance configuration to use.");
+            }
+
             builder.Register(ComposeEventStore)
                 .SingleInstance()
-                .As<IStoreEvents, IAccessSnapshots>();
+                .As<IStoreEvents>();
 
             builder.RegisterType<ConflictDetector>().As<IDetectConflicts>();
             builder.RegisterType<EventStoreRepository>().As<IRepository>();
@@ -90,7 +95,9 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
             var pipelineHooks = context.Resolve<IEnumerable<IPipelineHook>>();
 
-            var store = Wireup.Init().UsingSqlPersistence("EventStore", eventStoreConnectionString)
+            Wireup wireup = Wireup.Init();
+            
+            var store = wireup.UsingSqlPersistence("EventStore", configuration)
                 .InitializeStorageEngine()
                 .UsingJsonSerialization()
                 .HookIntoPipelineUsing(pipelineHooks)
