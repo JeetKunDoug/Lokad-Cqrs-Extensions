@@ -52,6 +52,9 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\..\lib\rhino.security\Iesi.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="Lokad.Cloud.Storage">
+      <HintPath>..\..\lib\lokad-cloud\Lokad.Cloud.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="Lokad.Cqrs.Azure">
       <HintPath>..\..\lib\lokad-cqrs\Lokad.Cqrs.Azure.dll</HintPath>
     </Reference>
@@ -61,6 +64,7 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\..\lib\rhino.security\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="NHibernate">
       <HintPath>..\..\lib\rhino.security\NHibernate.dll</HintPath>
     </Reference>
@@ -77,11 +81,15 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AtomicStorageSerializerWithJson.cs" />
+    <Compile Include="AutofacServiceLocator.cs" />
     <Compile Include="EventStore\Build\IPipelineConfiguration.cs" />
     <Compile Include="EventStore\Build\ISnapshottingConfiguration.cs" />
     <Compile Include="EventStore\Build\PipelineModule.cs" />
@@ -99,7 +107,6 @@
     <Compile Include="EventStore\Build\ExtendWireup.cs" />
     <Compile Include="EventStore\Build\ExtendCqrsEngineBuilder.cs" />
     <Compile Include="EventStore\SqlServerPersistance.cs" />
-    <Compile Include="Permissions\AutofacServiceLocator.cs" />
     <Compile Include="Permissions\Build\ExtendCqrsClientBuilder.cs" />
     <Compile Include="Permissions\Build\ExtendCqrsEngineBuilder.cs" />
     <Compile Include="Permissions\Build\Filter.cs" />
@@ -129,6 +136,17 @@
     <Compile Include="Permissions\Specification\NullAuthorizationSpecification.cs" />
     <Compile Include="Permissions\Specification\OrAuthorizationSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storage\Build\ExtendCqrsClientBuilder.cs" />
+    <Compile Include="Storage\Build\ExtendCqrsEngineBuilder.cs" />
+    <Compile Include="Storage\Build\StorageModule.cs" />
+    <Compile Include="Storage\ExtendMaybe.cs" />
+    <Compile Include="Storage\FileTableStorageProvider.cs" />
+    <Compile Include="Storage\FileTableStore.cs" />
+    <Compile Include="Web.Security\AzureMembershipProvider.cs" />
+    <Compile Include="Web.Security\IPasswordCodec.cs" />
+    <Compile Include="Web.Security\MembershipProviderDataStore.cs" />
+    <Compile Include="Web.Security\MembershipProviderPasswordCodec.cs" />
+    <Compile Include="Web.Security\UserEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

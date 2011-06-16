@@ -39,7 +39,7 @@ using Autofac;
 
 using Microsoft.Practices.ServiceLocation;
 
-namespace Lokad.Cqrs.Extensions.Permissions
+namespace Lokad.Cqrs.Extensions
 {
     internal sealed class AutofacServiceLocator : ServiceLocatorImplBase
     {
