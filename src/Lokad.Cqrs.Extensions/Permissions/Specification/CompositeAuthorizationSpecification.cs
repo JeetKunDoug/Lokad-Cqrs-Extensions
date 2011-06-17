@@ -2,12 +2,12 @@ using Rhino.Security;
 
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    abstract class CompositeAuthorizationSpecification<T> : IAuthorizationSpecification<T> where T: class, ISecurableEntity
+    abstract class CompositeAuthorizationSpecification : IAuthorizationSpecification
     {
-        private readonly IAuthorizationSpecification<T> left;
-        private readonly IAuthorizationSpecification<T> right;
+        private readonly IAuthorizationSpecification left;
+        private readonly IAuthorizationSpecification right;
 
-        protected CompositeAuthorizationSpecification(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
+        protected CompositeAuthorizationSpecification(IAuthorizationSpecification left, IAuthorizationSpecification right)
         {
             this.left = left;
             this.right = right;
@@ -36,7 +36,7 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             }
         }
 
-        public void Assert()
+        public void Demand()
         {
             if (IsDenied())
                 throw new PermissionException(AuthorizationInformation);
@@ -44,7 +44,7 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
 
         #endregion
 
-        protected abstract bool IsAllowed(IAuthorizationSpecification<T> left,
-                                            IAuthorizationSpecification<T> right);
+        protected abstract bool IsAllowed(IAuthorizationSpecification left,
+                                            IAuthorizationSpecification right);
     }
 }

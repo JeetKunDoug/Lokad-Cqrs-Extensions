@@ -1,6 +1,6 @@
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    class NullAuthorizationSpecification<T> : IAuthorizationSpecification<T> where T : class, ISecurableEntity
+    class NullAuthorizationSpecification : IAuthorizationSpecification
     {
         public bool IsDenied()
         {
@@ -17,7 +17,7 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
             get { return string.Empty; }
         }
 
-        public void Assert()
+        public void Demand()
         {}
     }
 }

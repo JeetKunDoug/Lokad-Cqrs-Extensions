@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 using Microsoft.Practices.ServiceLocation;
 
@@ -22,36 +23,26 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
         public AuthorizationBuilder(PermissionsUser user) : this(user, Guid.Empty)
         {}
 
-        public IAuthorizationSpecification<T> For(string action)
+        public IAuthorizationSpecification For(Expression<Action<T>> expression)
         {
-            return CreateSpecification(GetOperation(action));
+            var body = expression.Body as MethodCallExpression;
+            if (body == null)
+                throw new Exception("Expression is incorrect");
+
+            return CreateSpecification(GetOperation(body.Method.Name));
         }
 
-        public IAuthorizationSpecification<T> For(params string[] actions)
+        public IAuthorizationSpecification For(string operation)
         {
-            IAuthorizationSpecification<T> specification = new NullAuthorizationSpecification<T>();
-
-            if(actions.Length > 0)
-            {
-                specification = CreateSpecification(GetOperation(actions[0]));
-            }
-
-            for (int i = 1; i < actions.Length; i++)
-            {
-                var operation = GetOperation(actions[i]);
-                var child = CreateSpecification(operation);
-                specification = specification.And(child);
-            }
-
-            return specification;
+            return CreateSpecification(GetOperation(operation));
         }
 
-        public IAuthorizationSpecification<T> ForRoot()
+        public IAuthorizationSpecification ForRoot()
         {
             return CreateSpecification(RootOperation);
         }
 
-        private IAuthorizationSpecification<T> CreateSpecification(string operation)
+        private IAuthorizationSpecification CreateSpecification(string operation)
         {
             var authorizationService = Resolve<IAuthorizationService>();
 

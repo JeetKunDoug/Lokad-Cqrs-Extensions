@@ -1,15 +1,15 @@
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    class AndAuthorizationSpecification<T> : CompositeAuthorizationSpecification<T> where T: class , ISecurableEntity
+    class AndAuthorizationSpecification : CompositeAuthorizationSpecification
     {
-        public AndAuthorizationSpecification(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
+        public AndAuthorizationSpecification(IAuthorizationSpecification left, IAuthorizationSpecification right)
             : base(left, right)
         {
         }
 
         #region Overrides of CompositeAuthorizationSpecification<T>
 
-        protected override bool IsAllowed(IAuthorizationSpecification<T> left, IAuthorizationSpecification<T> right)
+        protected override bool IsAllowed(IAuthorizationSpecification left, IAuthorizationSpecification right)
         {
             return left.IsAllowed() && right.IsAllowed();
         }

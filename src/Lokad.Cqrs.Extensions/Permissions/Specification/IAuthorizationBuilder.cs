@@ -1,10 +1,17 @@
+using System;
+using System.Linq.Expressions;
+
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    public interface IAuthorizationBuilder<T> where T : class, ISecurableEntity, new()
+    public interface IAuthorizationBuilder
     {
-        IAuthorizationSpecification<T> For(string action);
-        IAuthorizationSpecification<T> For(params string[] actions);
-        IAuthorizationSpecification<T> ForRoot();
+        IAuthorizationSpecification For(string operation);
+        IAuthorizationSpecification ForRoot();
         string RootOperation { get; }
+    }
+
+    public interface IAuthorizationBuilder<T> : IAuthorizationBuilder where T : class, ISecurableEntity, new()
+    {
+        IAuthorizationSpecification For(Expression<Action<T>> expression);
     }
 }

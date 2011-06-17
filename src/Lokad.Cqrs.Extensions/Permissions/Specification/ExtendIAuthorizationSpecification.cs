@@ -2,14 +2,14 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
     public static class ExtendIAuthorizationSpecification
     {
-        public static IAuthorizationSpecification<T> And<T>(this IAuthorizationSpecification<T> @this, IAuthorizationSpecification<T> specification) where T : class, ISecurableEntity
+        public static IAuthorizationSpecification And(this IAuthorizationSpecification @this, IAuthorizationSpecification specification)
         {
-            return new AndAuthorizationSpecification<T>(@this, specification);
+            return new AndAuthorizationSpecification(@this, specification);
         }
 
-        public static IAuthorizationSpecification<T> Or<T>(this IAuthorizationSpecification<T> @this, IAuthorizationSpecification<T> specification) where T : class, ISecurableEntity
+        public static IAuthorizationSpecification Or(this IAuthorizationSpecification @this, IAuthorizationSpecification specification)
         {
-            return new OrAuthorizationSpecification<T>(@this, specification);
+            return new OrAuthorizationSpecification(@this, specification);
         }
     }
 }

@@ -1,10 +1,14 @@
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    public interface IAuthorizationSpecification<T> where T : class, ISecurableEntity
+    public interface IAuthorizationSpecification
     {
         bool IsDenied();
         bool IsAllowed();
         string AuthorizationInformation { get; }
-        void Assert();
+        void Demand();
     }
+
+    public interface IAuthorizationSpecification<T> : IAuthorizationSpecification
+        where T: class, ISecurableEntity, new()
+    {}
 }

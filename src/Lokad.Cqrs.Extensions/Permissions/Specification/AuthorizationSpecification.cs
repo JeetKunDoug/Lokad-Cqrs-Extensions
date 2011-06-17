@@ -1,8 +1,10 @@
+using System;
+
 using Rhino.Security.Interfaces;
 
 namespace Lokad.Cqrs.Extensions.Permissions.Specification
 {
-    class AuthorizationSpecification<T> : IAuthorizationSpecification<T> where T : class, ISecurableEntity
+    public class AuthorizationSpecification<T> : IAuthorizationSpecification<T> where T : class, ISecurableEntity, new()
     {
         private readonly string operation;
         private readonly IAuthorizationService authorizationService;
@@ -26,15 +28,24 @@ namespace Lokad.Cqrs.Extensions.Permissions.Specification
 
         public bool IsAllowed()
         {
-            return authorizationService.IsAllowed(user, entity, operation);
+            return entity.SecurityKey == Guid.Empty
+                       ? authorizationService.IsAllowed(user, operation)
+                       : authorizationService.IsAllowed(user, entity, operation);
         }
 
         public virtual string AuthorizationInformation
         {
-            get { return authorizationService.GetAuthorizationInformation(user, entity, operation).ToString(); }
+            get
+            {
+                var information = entity.SecurityKey == Guid.Empty
+                                      ? authorizationService.GetAuthorizationInformation(user, operation)
+                                      : authorizationService.GetAuthorizationInformation(user, entity, operation);
+
+                return information.ToString();
+            }
         }
 
-        public void Assert()
+        public void Demand()
         {
             if(IsDenied())
                 throw new PermissionException(AuthorizationInformation);

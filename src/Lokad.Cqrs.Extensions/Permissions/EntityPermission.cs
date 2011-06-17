@@ -17,7 +17,6 @@ namespace Lokad.Cqrs.Extensions.Permissions
         private readonly IPermissionsBuilderService permissionsBuilder;
         private string activeOperation;
 
-
         public EntityPermission(PermissionsUser user, Guid entityId)
         {
             this.user = user;
@@ -35,6 +34,22 @@ namespace Lokad.Cqrs.Extensions.Permissions
         {
             activeOperation = GetOperation(operation);
             return this;
+        }
+
+        public void AllowOperations(params string[] operations)
+        {
+            foreach (var operation in operations)
+            {
+                OnOperation(operation).Allow();
+            }
+        }
+
+        public void DenyOperations(params string[] operations)
+        {
+            foreach (var operation in operations)
+            {
+                OnOperation(operation).Deny();
+            }
         }
 
         public void Allow()
