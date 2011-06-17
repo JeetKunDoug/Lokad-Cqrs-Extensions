@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Lokad.Cloud.Storage;
 
@@ -91,6 +92,9 @@ namespace Lokad.Cqrs.Extensions.Storage
         {
             get
             {
+                if (!ContainsKey(tableName))
+                    return Enumerable.Empty<FileTableStorageProvider.MockTableEntry>();
+
                 var file = Path.Combine(storePath, tableName);
                 using(var stream = File.OpenRead(file))
                 {
