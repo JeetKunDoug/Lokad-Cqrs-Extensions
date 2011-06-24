@@ -94,7 +94,7 @@ namespace Lokad.Cqrs.Extensions.Permissions.Build
                 .SingleInstance()
                 .As<ISessionFactory>();
 
-            builder.Register(OpenSession).InstancePerLifetimeScope()
+            builder.Register(OpenSession).InstancePerDependency()
                 .As<ISession>();
 
             builder.RegisterType<ServiceLocatorSetter>()
