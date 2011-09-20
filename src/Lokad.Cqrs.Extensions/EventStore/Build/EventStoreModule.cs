@@ -41,7 +41,7 @@ using CommonDomain.Persistence.EventStore;
 
 using EventStore;
 using EventStore.Dispatcher;
-
+using EventStore.Serialization;
 using Lokad.Cqrs.Core.Envelope;
 
 namespace Lokad.Cqrs.Extensions.EventStore.Build
@@ -52,6 +52,7 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
         private readonly ContainerBuilder builder = new ContainerBuilder();
         private IConstructAggregates aggregateConstructor = AggregateFactory.Default;
         private string eventStoreConnectionString = "";
+        private ISerialize serializer;
 
         #region IPersistanceConfiguration Members
 
@@ -66,6 +67,12 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
         public EventStoreModule ConstructAggregatesWith(IConstructAggregates constructor)
         {
             aggregateConstructor = constructor;
+            return this;
+        }
+
+        public EventStoreModule SerializeWith(ISerialize serializerToUse)
+        {
+            this.serializer = serializerToUse;
             return this;
         }
 
@@ -90,9 +97,10 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
 
             var pipelineHooks = context.Resolve<IEnumerable<IPipelineHook>>();
 
-            var store = Wireup.Init().UsingSqlPersistence("EventStore", eventStoreConnectionString)
+            var store = Wireup.Init()
+                .UsingSqlPersistence("EventStore", eventStoreConnectionString)
                 .InitializeStorageEngine()
-                .UsingJsonSerialization()
+                .UsingCustomSerialization(serializer ?? new JsonSerializer(new Type[0]))
                 .HookIntoPipelineUsing(pipelineHooks)
                 .UsingAsynchronousDispatcher()
                 .PublishTo(publisher)

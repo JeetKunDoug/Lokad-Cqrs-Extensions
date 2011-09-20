@@ -11,3 +11,4 @@ _ReSharper.*/
 /Rhino.Security/Rhino.Security.xml
 /Rhino.Security/Rhino.Security.XML
 temp/
+*crunch*.local.xml
