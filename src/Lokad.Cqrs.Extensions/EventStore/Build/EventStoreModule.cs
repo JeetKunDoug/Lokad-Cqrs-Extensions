@@ -102,7 +102,10 @@ namespace Lokad.Cqrs.Extensions.EventStore.Build
                 .InitializeStorageEngine()
                 .UsingCustomSerialization(serializer ?? new JsonSerializer(new Type[0]))
                 .HookIntoPipelineUsing(pipelineHooks)
-                .UsingAsynchronousDispatcher()
+                // When running under Lokad, use synchronous dispatcher as we want to retry if event sends fail
+                // Also, there is an issue in the EventStore that causes an appdomain to crash if an exception is thrown
+                // from inside the async dispatcher.
+                .UsingSynchronousDispatcher()
                 .PublishTo(publisher)
                 .Build();
 
